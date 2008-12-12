@@ -1,0 +1,52 @@
+div.nav_menu_items
+{
+	width: 330px;
+}
+
+select.nav_menu_item_select
+{
+	width: 285px;
+}
+
+input.nav_menu_item_button
+{
+	width: 30px;
+}
+
+div.nav_menu_item
+{
+	width: 314px;
+	padding: 8px;
+	margin: 5px 0px;
+	cursor: move !important;
+}
+
+div.nav_menu_item_empty
+{
+	padding: 20px;
+	text-align: center;
+	font-style: italic;
+}
+
+div.nav_menu_item:hover,
+div.nav_menu_item_empty:hover
+{
+	color: inherit !important;
+}
+
+div.nav_menu_item_header
+{
+	padding-left: 0px;
+	margin-left: 0px;
+}
+
+input.nav_menu_item_label,
+input.nav_menu_item_ref
+{
+	width: 265px;
+}
+
+div.nav_menu_item_content
+{
+	padding-top: 5px;
+}
