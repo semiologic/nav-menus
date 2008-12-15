@@ -6,7 +6,7 @@ Description: WordPress widgets that let you create navigation menus
 Author: Denis de Bernardy
 Version: 1.1
 Author URI: http://www.getsemiologic.com
-Update Service: http://version.semiologic.com/wordpress
+Update Service: http://version.semiologic.com/plugins
 Update Tag: nav_menus
 Update Package: http://www.semiologic.com/media/software/widgets/nav-menus/nav-menus.zip
 */
