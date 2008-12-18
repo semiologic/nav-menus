@@ -4,7 +4,7 @@ Plugin Name: Nav Menus
 Plugin URI: http://www.semiologic.com/software/widgets/nav-menus/
 Description: WordPress widgets that let you create navigation menus
 Author: Denis de Bernardy
-Version: 1.1
+Version: 1.2 alpha
 Author URI: http://www.getsemiologic.com
 Update Service: http://version.semiologic.com/plugins
 Update Tag: nav_menus
@@ -21,7 +21,7 @@ http://www.mesoconcepts.com/license/
 **/
 
 
-load_plugin_textdomain('nav-menus','wp-content/plugins/nav-menus');
+load_plugin_textdomain('nav-menus', 'wp-content/plugins/nav-menus');
 
 class nav_menus
 {
@@ -120,7 +120,7 @@ class nav_menus
 		}
 		
 		# front end: serve cache if available
-		if ( !is_admin() )
+		if ( !is_admin() && false )
 		{
 			if ( is_page() )
 			{
@@ -462,7 +462,60 @@ class nav_menus
 		
 		$classes = array_unique($classes);
 		
-		return '<li class="nav_leaf">'
+		static $site_domain;
+		static $site_len;
+		
+		if ( !isset($site_domain) )
+		{
+			$site_domain = get_option('home');
+			$site_domain = parse_url($site_domain);
+			$site_domain = $site_domain['host'];
+			
+			if ( $site_domain != 'localhost' && !preg_match("/\d+(\.\d+){3}/", $site_domain) )
+			{
+				$tlds = array('wattle.id.au', 'emu.id.au', 'csiro.au', 'name.tr', 'conf.au', 'info.tr', 'info.au', 'gov.au', 'k12.tr', 'lel.br', 'ltd.uk', 'mat.br', 'jor.br', 'med.br', 'net.hk', 'net.eg', 'net.cn', 'net.br', 'net.au', 'mus.br', 'mil.tr', 'mil.br', 'net.lu', 'inf.br', 'fnd.br', 'fot.br', 'fst.br', 'g12.br', 'gb.com', 'gb.net', 'gen.tr', 'ggf.br', 'gob.mx', 'gov.br', 'gov.cn', 'gov.hk', 'gov.tr', 'idv.tw', 'imb.br', 'ind.br', 'far.br', 'net.mx', 'se.com', 'rec.br', 'qsl.br', 'psi.br', 'psc.br', 'pro.br', 'ppg.br', 'pol.tr', 'se.net', 'slg.br', 'vet.br', 'uk.net', 'uk.com', 'tur.br', 'trd.br', 'tmp.br', 'tel.tr', 'srv.br', 'plc.uk', 'org.uk', 'ntr.br', 'not.br', 'nom.br', 'no.com', 'net.uk', 'net.tw', 'net.tr', 'net.ru', 'odo.br', 'oop.br', 'org.tw', 'org.tr', 'org.ru', 'org.lu', 'org.hk', 'org.cn', 'org.br', 'org.au', 'web.tr', 'eun.eg', 'zlg.br', 'cng.br', 'com.eg', 'bio.br', 'agr.br', 'biz.tr', 'cnt.br', 'art.br', 'com.hk', 'adv.br', 'cim.br', 'com.mx', 'arq.br', 'com.ru', 'com.tr', 'bmd.br', 'com.tw', 'adm.br', 'ecn.br', 'edu.br', 'etc.br', 'eng.br', 'esp.br', 'com.au', 'com.br', 'ato.br', 'com.cn', 'eti.br', 'edu.au', 'bel.tr', 'edu.tr', 'asn.au', 'jl.cn', 'mo.cn', 'sh.cn', 'nm.cn', 'js.cn', 'jx.cn', 'am.br', 'sc.cn', 'sn.cn', 'me.uk', 'co.jp', 'ne.jp', 'sx.cn', 'ln.cn', 'co.uk', 'co.at', 'sd.cn', 'tj.cn', 'cq.cn', 'qh.cn', 'gs.cn', 'gr.jp', 'dr.tr', 'ac.jp', 'hb.cn', 'ac.cn', 'gd.cn', 'pp.ru', 'xj.cn', 'xz.cn', 'yn.cn', 'av.tr', 'fm.br', 'fj.cn', 'zj.cn', 'gx.cn', 'gz.cn', 'ha.cn', 'ah.cn', 'nx.cn', 'tv.br', 'tw.cn', 'bj.cn', 'id.au', 'or.at', 'hn.cn', 'ad.jp', 'hl.cn', 'hk.cn', 'ac.uk', 'hi.cn', 'he.cn', 'or.jp', 'name', 'info', 'aero', 'com', 'net', 'org', 'biz', 'edu', 'int', 'mil', 'ua', 'st', 'tw', 'sg', 'uk', 'au', 'za', 'yu', 'ws', 'at', 'us', 'vg', 'as', 'va', 'tv', 'pt', 'si', 'sk', 'ag', 'sm', 'ca', 'su', 'al', 'am', 'tc', 'th', 'tm', 'ro', 'tn', 'to', 'ru', 'se', 'sh', 'eu', 'dk', 'ie', 'il', 'de', 'cz', 'cy', 'cx', 'is', 'it', 'jp', 'ke', 'kr', 'la', 'hu', 'hm', 'hk', 'fi', 'fj', 'fo', 'fr', 'es', 'gb', 'eg', 'ge', 'ee', 'gl', 'ac', 'gr', 'gs', 'li', 'lk', 'cd', 'nl', 'no', 'cc', 'by', 'br', 'nu', 'nz', 'bg', 'be', 'ba', 'az', 'pk', 'ch', 'ck', 'cl', 'lt', 'lu', 'lv', 'ma', 'mc', 'md', 'mk', 'mn', 'ms', 'mt', 'mx', 'dz', 'cn', 'pl');
+				
+				$site_len = strlen($site_domain);
+				
+				for ( $i = 0; $i < count($tlds); $i++ )
+				{
+					$tld = $tlds[$i];
+					$tld_len = strlen($tld);
+					
+					# drop stuff that's too short
+					if ( $site_len < $tld_len + 2 ) continue;
+					
+					# catch stuff like blahco.uk
+					if ( substr($site_domain, -1 * $tld_len - 1, 1) != '.' ) continue;
+					
+					# match?
+					if ( substr($site_domain, -1 * $tld_len) != $tld ) continue;
+					
+					# extract domain
+					$site_domain = substr($site_domain, 0, $site_len - $tld_len - 1);
+					$site_domain = explode('.', $site_domain);
+					$site_domain = array_pop($site_domain);
+					$site_domain = $site_domain . '.' . $tld;
+				}
+			}
+		}
+		
+		$link_domain = $item['ref'];
+		$link_domain = parse_url($link_domain);
+		$link_domain = $link_domain['host'];
+		
+		if ( $site_domain == $link_domain
+			|| substr($link_domain, -1 * strlen($site_domain) - 1) == ( '.' . $site_domain )
+			)
+		{
+			$li_class = 'nav_branch';
+		}
+		else
+		{
+			$li_class = 'nav_leaf';
+		}
+		
+		return '<li class="' . $li_class . '">'
 			. '<span class="' . implode(' ', $classes) . '">'
 			. $link
 			. '</span>'
