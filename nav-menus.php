@@ -120,7 +120,7 @@ class nav_menus
 		}
 		
 		# front end: serve cache if available
-		if ( !is_admin() && false )
+		if ( !is_admin() )
 		{
 			if ( is_page() )
 			{
