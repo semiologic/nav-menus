@@ -463,7 +463,6 @@ class nav_menus
 		$classes = array_unique($classes);
 		
 		static $site_domain;
-		static $site_len;
 		
 		if ( !isset($site_domain) )
 		{
