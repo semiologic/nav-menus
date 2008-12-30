@@ -286,7 +286,7 @@ class nav_menus_admin
 		
 		echo '<optgroup label="' . attribute_escape('Url') . '">';
 		
-		$value = 'type=home&amp;url=' . urlencode(get_option('home'));
+		$value = 'type=home&amp;url=' . urlencode(user_trailingslashit(get_option('home')));
 		
 		echo '<option value="' . $value . '"'
 			. ' class="nav_menu_item_home"'
@@ -365,7 +365,8 @@ class nav_menus_admin
 					break;
 
 				case 'home':
-					$url = get_option('home');
+					$url = user_trailingslashit(get_option('home'));
+					break;
 				case 'page':
 					echo '<input type="hidden" name="nav-menu[' . $number . '][items][' . $item_id . '][ref]"'
 						. ' value="' . intval($item['ref']) . '"'
