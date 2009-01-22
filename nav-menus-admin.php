@@ -19,8 +19,6 @@ class nav_menus_admin
 			update_option('nav_menus_cache', array());
 		}
 
-		add_filter('sem_api_key_protected', array('nav_menus_admin', 'sem_api_key_protected'));
-		
 		if ( version_compare(mysql_get_server_info(), '4.1', '<') )
 		{
 			add_action('admin_notices', array('nav_menus_admin', 'mysql_warning'));
@@ -81,18 +79,6 @@ class nav_menus_admin
 			. '<p><b style="color: firebrick;">Nav Menus Error</b><br /><b>Your MySQL version is lower than 4.1.</b> It\'s time to <a href="http://www.semiologic.com/resources/wp-basics/wordpress-server-requirements/">change hosts</a> if yours doesn\'t want to upgrade.</p>'
 			. '</div>';
 	} # mysql_warning()
-	
-		
-	#
-	# sem_api_key_protected()
-	#
-	
-	function sem_api_key_protected($array)
-	{
-		$array[] = 'http://www.semiologic.com/media/software/widgets/nav-menus/nav-menus.zip';
-		
-		return $array;
-	} # sem_api_key_protected()
 	
 	
 	#
