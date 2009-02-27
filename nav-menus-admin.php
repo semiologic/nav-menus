@@ -62,7 +62,7 @@ class nav_menus_admin
 		echo '<link rel="stylesheet" type="text/css" href="'
 			. str_replace(
 				ABSPATH,
-				trailingslashit(get_option('siteurl')),
+				trailingslashit(site_url()),
 				dirname(__FILE__) . '/css/admin.css'
 				)
 			. '">' . "\n";
