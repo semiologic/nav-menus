@@ -451,7 +451,7 @@ class nav_menus
 		$classes = array();
 		
 		# process link
-		$link = $item['label'];
+		$link = ( $item['label'] ? $item['label'] : __('Untitled') );
 		
 		$link = '<a href="' . htmlspecialchars($item['ref']) . '">'
 			. $link
@@ -531,7 +531,7 @@ class nav_menus
 		$classes = array();
 		
 		# process link
-		$link = $item['label'];
+		$link = ( $item['label'] ? $item['label'] : __('Untitled') );
 		
 		if ( !( is_front_page() && !is_paged() ) )
 		{
@@ -574,7 +574,7 @@ class nav_menus
 		$classes = array();
 		
 		# process link
-		$link = $post_label[$item_id];
+		$link = ( $post_label[$item_id] ? $post_label[$item_id] : __('Untitled') );
 		
 		if ( ( $page_id != $item_id )
 			&& !( $is_blog_page && is_home() && !is_paged() )
