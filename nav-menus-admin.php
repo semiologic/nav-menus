@@ -365,7 +365,7 @@ class nav_menus_admin
 				{
 				case 'home':
 				case 'page':
-					echo '&rarr;&nbsp;<a href="' . $url . '" class="nav_menu_item_preview" target="_blank">'
+					echo '&rarr;&nbsp;<a href="' . $url . '" class="nav_menu_item_preview" onclick="window.open(this.href); return false;">'
 						. attribute_escape($item['label'])
 						. '</a>';
 					break;

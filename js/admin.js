@@ -149,7 +149,7 @@ nav_menus = {
 		{
 		case 'home':
 		case 'page':
-			str += '&rarr;&nbsp;<a href="' + url + '" class="nav_menu_item_preview" target="_blank">' +  label + '</a>';
+			str += '&rarr;&nbsp;<a href="' + url + '" class="nav_menu_item_preview" onclick="window.open(this.href); return false;">' +  label + '</a>';
 			break;
 		}
 		
