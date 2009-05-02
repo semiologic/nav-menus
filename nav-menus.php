@@ -3,7 +3,7 @@
 Plugin Name: Nav Menus
 Plugin URI: http://www.semiologic.com/software/nav-menus/
 Description: WordPress widgets that let you create navigation menus
-Version: 1.2.2 RC
+Version: 2.0 alpha
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 */
@@ -18,7 +18,424 @@ http://www.mesoconcepts.com/license/
 **/
 
 
-load_plugin_textdomain('nav-menus', 'wp-content/plugins/nav-menus');
+load_plugin_textdomain('nav-menus', null, basename(dirname(__FILE__)) . '/lang');
+
+
+/**
+ * nav_menu
+ *
+ * @package Nav Menus
+ **/
+
+add_action('widgets_init', array('nav_menu', 'widgets_init'));
+add_action('load-widgets.php', array('nav_menu', 'admin_init'));
+
+class nav_menu extends WP_Widget {
+	/**
+	 * widgets_init()
+	 *
+	 * @return void
+	 **/
+
+	function widgets_init() {
+		register_widget('nav_menu');
+	} # widgets_init()
+	
+	
+	/**
+	 * admin_init()
+	 *
+	 * @return void
+	 **/
+
+	function admin_init() {
+		add_action('admin_print_scripts', array('nav_menu', 'admin_print_scripts'));
+		add_action('admin_print_styles', array('nav_menu', 'admin_print_styles'));
+	} # admin_init()
+	
+	
+	/**
+	 * admin_print_scripts()
+	 *
+	 * @return void
+	 **/
+
+	function admin_print_scripts() {
+		$folder = plugin_dir_url(__FILE__) . 'js/';
+		wp_enqueue_script('jquery-livequery', $folder . 'jquery.livequery.js', array('jquery'),  '1.1', true);
+		wp_enqueue_script( 'nav-menus', $folder . 'admin.js', array('jquery-ui-sortable', 'jquery-livequery'),  '20090422', true);
+	} # admin_print_scripts()
+	
+	
+	/**
+	 * admin_print_styles()
+	 *
+	 * @return void
+	 **/
+
+	function admin_print_styles() {
+		$folder = plugin_dir_url(__FILE__) . 'css/';
+		wp_enqueue_style('nav-menus', $folder . 'admin.css', null, '20090422');
+	} # admin_print_styles()
+	
+	
+	/**
+	 * nav_menu()
+	 *
+	 * @return void
+	 **/
+
+	function nav_menu() {
+		$widget_ops = array(
+			'classname' => 'nav_menu',
+			'description' => __("A navigation menu", 'nav-menus'),
+			);
+		$control_ops = array(
+			'width' => 330,
+			);
+		
+		$this->WP_Widget('nav_menu', __('Nav Menu', 'nav-menus'), $widget_ops, $control_ops);
+	} # nav_menu()
+	
+	
+	/**
+	 * widget()
+	 *
+	 * @param array $args widget args
+	 * @param array $instance widget options
+	 * @return void
+	 **/
+
+	function widget($args, $instance) {
+		extract($args);
+		$instance = wp_parse_args($instance, nav_menu::defaults());
+		extract($instance, EXTR_SKIP);
+		
+		if ( is_admin() ) {
+			echo $before_widget
+				. $before_title . $title . $after_title
+				. $after_widget;
+			return;
+		}
+		
+		echo $before_widget;
+		
+		if ( $title )
+			echo $before_title . $title . $after_title;
+		
+		echo $after_widget;
+	} # widget()
+	
+	
+	/**
+	 * update()
+	 *
+	 * @param array $new_instance new widget options
+	 * @param array $old_instance old widget options
+	 * @return array $instance
+	 **/
+
+	function update($new_instance, $old_instance) {
+		$instance = nav_menu::defaults();
+		$instance['title'] = strip_tags($new_instance['title']);
+		$instance['desc'] = isset($new_instance['desc']);
+		foreach ( array_keys((array) $new_instance['items']['type']) as $key ) {
+			$item = array();
+			$item['type'] = $new_instance['items']['type'][$key];
+			
+			if ( !in_array($item['type'], array('home', 'url', 'page')) ) {
+				continue;
+			}
+			
+			$label = trim(strip_tags(stripslashes($new_instance['items']['label'][$key])));
+			
+			switch ( $item['type'] ) {
+				case 'home':
+					$item['label'] = $label;
+					break;
+				case 'url':
+					$item['ref'] = trim(strip_tags(stripslashes($new_instance['items']['ref'][$key])));
+					$item['label'] = $label;
+					break;
+				case 'page':
+					$item['ref'] = intval($new_instance['items']['ref'][$key]);
+					$page = get_post($item['ref']);
+					if ( $page->post_title != $label ) {
+						update_post_meta($item['ref'], '_widgets_label', $label);
+					} else {
+						delete_post_meta($item['ref'], '_widgets_label');
+					}
+					break;
+			}
+			
+			$instance['items'][] = $item;
+		}
+		
+		return $instance;
+	} # update()
+	
+	
+	/**
+	 * form()
+	 *
+	 * @param array $instance widget options
+	 * @return void
+	 **/
+
+	function form($instance) {
+		$instance = wp_parse_args($instance, nav_menu::defaults());
+		static $pages;
+		dump(get_option('nav_menus_debug'));
+		if ( !isset($pages) ) {
+			global $wpdb;
+			$pages = $wpdb->get_results("
+				SELECT	posts.*,
+						COALESCE(post_label.meta_value, post_title) as post_label
+				FROM	$wpdb->posts as posts
+				LEFT JOIN $wpdb->postmeta as post_label
+				ON		post_label.post_id = posts.ID
+				AND		post_label.meta_key = '_widgets_label'
+				WHERE	posts.post_type = 'page'
+				AND		posts.post_status = 'publish'
+				AND		posts.post_parent = 0
+				ORDER BY posts.menu_order, posts.post_title
+				");
+			update_post_cache($pages);
+		}
+		
+		extract($instance, EXTR_SKIP);
+		
+		echo '<h3>' . __('Config', 'nav-menus') . '</h3>' . "\n";
+		
+		echo '<p>'
+			. '<label>'
+			. __('Title:', 'nav-menus') . '<br />' . "\n"
+			. '<input type="text" class="widefat"'
+				. ' name="' . $this->get_field_name('title') . '"'
+				. ' value="' . attribute_escape($title) . '"'
+				. ' />'
+			. '</p>' . "\n";
+		
+		echo '<p>'
+			. '<label>'
+			. '<input type="checkbox"'
+				. ' name="' . $this->get_field_name('desc') . '"'
+				. checked($desc, true, false)
+				. ' />'
+			. '&nbsp;'
+			. __('Show Descriptions', 'nav-menus') . "\n"
+			. '</p>' . "\n";
+		
+		echo '<h3>' . __('Menu Items') . '</h3>' . "\n";
+		
+		echo '<p>'
+			. 'Drag and drop menu items to rearrange them.'
+			. '</p>' . "\n";
+		
+		echo '<div class="nav_menu_items">' . "\n";
+		
+		echo '<div class="nav_menu_items_controller">' . "\n";
+		
+		echo '<select class="nav_menu_item_select"'
+			. ' name="' . $this->get_field_name('dropdown') . '">' . "\n"
+			. '<option value="">'
+				. attribute_escape(__('- Select a menu item -', 'nav-menus'))
+				. '</option>' . "\n"
+			. '<optgroup label="' . attribute_escape(__('Special', 'nav-menu')) . '">' . "\n"
+			. '<option value="home" class="nav_menu_item_home">'
+				. __('Home', 'nav-menu')
+				. '</option>' . "\n"
+			. '<option value="url" class="nav_menu_item_url">'
+				. __('Url', 'nav-menu')
+				. '</option>' . "\n"
+			. '</optgroup>' . "\n"
+			. '<optgroup class="nav_menu_item_pages"'
+				. ' label="' . attribute_escape(__('Pages', 'nav-menu')) . '"'
+				. '>' . "\n"
+			;
+		
+		foreach ( $pages as $page ) {
+			echo '<option value="page-' . $page->ID . '">'
+				. attribute_escape($page->post_label)
+				. '</option>' . "\n";
+		}
+		
+		echo '</optgroup>' . "\n";
+		
+		echo '</select>';
+		
+		echo '&nbsp;';
+		
+		echo '<input type="button" class="nav_menu_item_add" value="&nbsp;+&nbsp;" />' . "\n";
+		
+		echo '</div>' . "\n"; # controller
+		
+		echo '<div class="nav_menu_item_defaults" style="display: none;">' . "\n";
+		
+		echo '<div class="nav_menu_item_blank">' . "\n"
+			. '<p>' . __('Empty Navigation Menu', 'nav-menus') . '</p>' . "\n"
+			. '</div>' . "\n";
+		
+		$default_items = array(
+			array(
+				'type' => 'home',
+				'label' => __('Home', 'nav-menus'),
+				),
+			array(
+				'type' => 'url',
+				'ref' => 'http://',
+				'label' => __('Url Label', 'nav-menus'),
+				),
+			);
+		
+		foreach ( $pages as $page ) {
+			$default_items[] = array(
+				'type' => 'page',
+				'ref' => $page->ID,
+				'label' => $page->post_label,
+				);
+		}
+		
+		foreach ( $default_items as $item ) {
+			$label = $item['label'];
+			$type = $item['type'];
+			switch ( $type ) {
+			case 'home':
+				$ref = 'home';
+				$url = user_trailingslashit(get_option('home'));
+				$handle = 'home';
+				break;
+			case 'url':
+				$ref = $item['ref'];
+				$url = $ref;
+				$handle = 'url';
+				break;
+			case 'page':
+				$ref = $item['ref'];
+				$url = get_permalink($ref);
+				$handle = 'page-' . $ref;
+				$page = get_post($ref);
+				$label = $page->post_label;
+				break;
+			}
+			
+			echo '<div class="nav_menu_item nav_menu_item-' . $handle . ' button">' . "\n"
+				. '<div class="nav_menu_item_data">' ."\n"
+				. '<input type="text" class="nav_menu_item_label" disabled="disabled"'
+					. ' name="' . $this->get_field_name('items') . '[label][]"'
+					. ' value="' . attribute_escape($label) . '"'
+					. ' />' . "\n"
+				. '&nbsp;'
+				. '<input type="button" class="nav_menu_item_remove" disabled="disabled"'
+					. ' value="&nbsp;-&nbsp;" />' . "\n"
+				. '<input type="hidden" disabled="disabled"'
+					. ' class="nav_menu_item_type"'
+					. ' name="' . $this->get_field_name('items') . '[type][]"'
+					. ' value="' . $type . '"'
+					. ' />' . "\n"
+				. '<input type="' . ( $handle == 'url' ? 'text' : 'hidden' ) . '" disabled="disabled"'
+					. ' class="nav_menu_item_ref"'
+					. ' name="' . $this->get_field_name('items') . '[ref][]"'
+					. ' value="' . $ref . '"'
+					. ' />' . "\n"
+				. '</div>' . "\n" # data
+				. '<div class="nav_menu_item_preview">' . "\n"
+				. '&rarr;&nbsp;<a href="' . htmlspecialchars($url) . '"'
+					. ' onclick="window.open(this.href); return false;">'
+					. $label
+					. '</a>'
+				. '</div>' . "\n" # preview
+				. '</div>' . "\n"; # item
+		}
+		
+		echo '</div>' . "\n"; # defaults
+		
+		echo '<div class="nav_menu_item_sortables">' . "\n";
+		
+		// autofill empty widgets with default items
+		if ( !$items )
+			$items = $default_items;
+		
+		foreach ( $items as $item ) {
+			$label = $item['label'];
+			$type = $item['type'];
+			switch ( $type ) {
+			case 'home':
+				$ref = 'home';
+				$url = user_trailingslashit(get_option('home'));
+				$handle = 'home';
+				break;
+			case 'url':
+				$ref = $item['ref'];
+				$url = $ref;
+				$handle = 'url';
+				break;
+			case 'page':
+				$ref = $item['ref'];
+				$url = get_permalink($ref);
+				$handle = 'page-' . $ref;
+				$page = get_post($ref);
+				$label = $page->post_label;
+				break;
+			}
+			
+			echo '<div class="nav_menu_item nav_menu_item-' . $handle . ' button">' . "\n"
+				. '<div class="nav_menu_item_data">' ."\n"
+				. '<input type="text" class="nav_menu_item_label"'
+					. ' name="' . $this->get_field_name('items') . '[label][]"'
+					. ' value="' . attribute_escape($label) . '"'
+					. ' />' . "\n"
+				. '&nbsp;'
+				. '<input type="button" class="nav_menu_item_remove" value="&nbsp;-&nbsp;" />' . "\n"
+					. '<input type="hidden"'
+						. ' class="nav_menu_item_type"'
+						. ' name="' . $this->get_field_name('items') . '[type][]"'
+						. ' value="' . $type . '"'
+						. ' />' . "\n"
+				. '<input type="' . ( $handle == 'url' ? 'text' : 'hidden' ) . '"'
+					. ' class="nav_menu_item_ref"'
+					. ' name="' . $this->get_field_name('items') . '[ref][]"'
+					. ' value="' . $ref . '"'
+					. ' />' . "\n"
+				. '</div>' . "\n" # data
+				. '<div class="nav_menu_item_preview">' . "\n"
+				. '&rarr;&nbsp;<a href="' . htmlspecialchars($url) . '"'
+					. ' onclick="window.open(this.href); return false;">'
+					. $label
+					. '</a>'
+				. '</div>' . "\n" # preview
+				. '</div>' . "\n"; # item
+		}
+		
+		if ( !$items ) {
+			echo '<div class="nav_menu_item_blank">' . "\n"
+				. '<p>' . __('Empty Navigation Menu', 'nav-menus') . '</p>' . "\n"
+				. '</div>' . "\n";
+		}
+		
+		echo '</div>' . "\n"; # sortables
+		
+		echo '</div>' . "\n"; # items
+	} # form()
+	
+	
+	/**
+	 * defaults()
+	 *
+	 * @return array $instance default options
+	 **/
+
+	function defaults() {
+		return array(
+			'title' => __('Browse', 'nav-menus'),
+			'desc' => false,
+			'items' => array(),
+			);
+	} # defaults()
+} # nav_menu
+
+
+
 
 class nav_menus
 {
@@ -689,11 +1106,6 @@ class nav_menus
 	} # default_options()
 } # nav_menus
 
-nav_menus::init();
-
-
-if ( is_admin() )
-{
-	include dirname(__FILE__) . '/nav-menus-admin.php';
-}
+if ( is_admin() && !class_exists('widget_utils') )
+	include dirname(__FILE__) . '/widget-utils.php';
 ?>

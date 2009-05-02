@@ -1,8 +1,4 @@
 <?php
-if ( !class_exists('widget_utils') )
-{
-	include dirname(__FILE__) . '/widget-utils.php';
-}
 
 class nav_menus_admin
 {
@@ -43,13 +39,8 @@ class nav_menus_admin
 		$plugin_path = preg_replace("/[^\/]+$/", '', $plugin_path);
 		$plugin_path = '/wp-content/plugins/' . $plugin_path . 'js/';
 		
-		wp_enqueue_script( 'jquery-livequery', $plugin_path . 'jquery.livequery.js', array('jquery'),  '1.0.3' );
-		wp_enqueue_script( 'dimensions' );
-		wp_enqueue_script( 'jquery-ui-mouse', $plugin_path . 'ui.mouse.js', array('jquery'),  '1.5' );
-		wp_enqueue_script( 'jquery-ui-draggable', $plugin_path . 'ui.draggable.js', array('jquery'),  '1.5' );
-		wp_enqueue_script( 'jquery-ui-droppable', $plugin_path . 'ui.droppable.js', array('dimensions', 'jquery-ui-mouse', 'jquery-ui-draggable'),  '1.5' );
-		wp_enqueue_script( 'jquery-ui-sortable', $plugin_path . 'ui.sortable.js', array('jquery-ui-draggable', 'jquery-ui-droppable'),  '1.5' );
-		wp_enqueue_script( 'nav-menus', $plugin_path . 'admin.js', array('jquery-ui-sortable', 'jquery-livequery'),  '20080415' );
+		wp_enqueue_script('jquery-livequery', $plugin_path . 'jquery.livequery.js', array('jquery'),  '1.1', true);
+		wp_enqueue_script( 'nav-menus', $plugin_path . 'admin.js', array('jquery-ui-sortable', 'jquery-livequery'),  '20090422', true);
 	} # register_scripts()
 	
 	
