@@ -39,9 +39,9 @@ class widget_utils
 	# post_widget_config()
 	#
 	
-	function post_widget_config()
+	function post_widget_config($post)
 	{
-		widget_utils::widget_config('post');
+		widget_utils::widget_config('post', $post);
 	} # post_widget_config()
 	
 	
@@ -49,9 +49,9 @@ class widget_utils
 	# page_widget_config()
 	#
 	
-	function page_widget_config()
+	function page_widget_config($post)
 	{
-		widget_utils::widget_config('page');
+		widget_utils::widget_config('page', $post);
 	} # page_widget_config()
 	
 	
@@ -79,9 +79,9 @@ class widget_utils
 	# widget_config()
 	#
 	
-	function widget_config($type)
+	function widget_config($type, $post)
 	{
-		$post_ID = isset($GLOBALS['post_ID']) ? $GLOBALS['post_ID'] : $GLOBALS['temp_ID'];
+		$post_ID = $post->ID;
 
 		echo '<p>'
 			. 'The following fields let you configure options shared by:'

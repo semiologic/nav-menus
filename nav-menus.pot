@@ -1,0 +1,81 @@
+# Nav Menus pot file.
+# Copyright (C) 2009 Mesoconcepts <http://www.mesoconcepts.com>
+# This file is distributed under the same license as the Nav Menus package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: 2.0\n"
+"Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
+"POT-Creation-Date: 2009-05-03 19:22+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: nav-menus.php:77
+msgid "Nav Menus"
+msgstr ""
+
+#: nav-menus.php:139
+msgid "A navigation menu"
+msgstr ""
+
+#: nav-menus.php:145
+msgid "Nav Menu"
+msgstr ""
+
+#: nav-menus.php:246 nav-menus.php:694 nav-menus.php:730
+msgid "Home"
+msgstr ""
+
+#: nav-menus.php:291 nav-menus.php:339
+msgid "Untitled"
+msgstr ""
+
+#: nav-menus.php:656
+msgid "Config"
+msgstr ""
+
+#: nav-menus.php:660
+msgid "Title:"
+msgstr ""
+
+#: nav-menus.php:674
+msgid "Show Descriptions"
+msgstr ""
+
+#: nav-menus.php:677
+msgid "Menu Items"
+msgstr ""
+
+#: nav-menus.php:690
+msgid "- Select a menu item -"
+msgstr ""
+
+#: nav-menus.php:692
+msgid "Special"
+msgstr ""
+
+#: nav-menus.php:697
+msgid "Url"
+msgstr ""
+
+#: nav-menus.php:701
+msgid "Pages"
+msgstr ""
+
+#: nav-menus.php:724 nav-menus.php:860
+msgid "Empty Navigation Menu"
+msgstr ""
+
+#: nav-menus.php:735
+msgid "Url Label"
+msgstr ""
+
+#: nav-menus.php:878
+msgid "Browse"
+msgstr ""
