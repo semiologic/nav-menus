@@ -155,7 +155,7 @@ class nav_menu extends WP_Widget {
 	 **/
 
 	function widget($args, $instance) {
-		extract($args);
+		extract($args, EXTR_SKIP);
 		$instance = wp_parse_args($instance, nav_menu::defaults());
 		extract($instance, EXTR_SKIP);
 		
