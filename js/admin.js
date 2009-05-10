@@ -60,7 +60,7 @@ jQuery(document).ready(function(){
 			item.remove();
 			items.sortable('refresh');
 		} else {
-			items.sortable('destroy');
+			items.sortable('disable');
 			items.empty();
 			items.append(blank);
 		}

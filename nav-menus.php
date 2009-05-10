@@ -30,7 +30,8 @@ load_plugin_textdomain('nav-menus', null, plugin_dir_path(__FILE__) . '/lang');
 if ( !defined('sem_widget_cache_debug') )
 	define('sem_widget_cache_debug', false);
 add_action('widgets_init', array('nav_menu', 'widgets_init'));
-add_action('load-widgets.php', array('nav_menu', 'widgets_admin_init'));
+add_action('admin_print_scripts-widgets.php', array('nav_menu', 'admin_print_scripts'));
+add_action('admin_print_styles-widgets.php', array('nav_menu', 'admin_print_styles'));
 foreach ( array('page.php', 'page-new.php') as $hook )
 	add_action('load-' . $hook, array('nav_menu', 'editor_init'));
 foreach ( array(
@@ -91,27 +92,15 @@ class nav_menu extends WP_Widget {
 	
 	
 	/**
-	 * widgets_admin_init()
-	 *
-	 * @return void
-	 **/
-
-	function widgets_admin_init() {
-		add_action('admin_print_scripts', array('nav_menu', 'admin_print_scripts'));
-		add_action('admin_print_styles', array('nav_menu', 'admin_print_styles'));
-	} # widgets_admin_init()
-	
-	
-	/**
 	 * admin_print_scripts()
 	 *
 	 * @return void
 	 **/
 
 	function admin_print_scripts() {
-		$folder = plugin_dir_url(__FILE__) . 'js/';
-		wp_enqueue_script('jquery-livequery', $folder . 'jquery.livequery.js', array('jquery'),  '1.1', true);
-		wp_enqueue_script( 'nav-menus', $folder . 'admin.js', array('jquery-ui-sortable', 'jquery-livequery'),  '20090502', true);
+		$folder = plugin_dir_url(__FILE__) . 'js';
+		wp_enqueue_script('jquery-livequery', $folder . '/jquery.livequery.js', array('jquery'),  '1.1', true);
+		wp_enqueue_script( 'nav-menus', $folder . '/admin.js', array('jquery-ui-sortable', 'jquery-livequery'),  '20090502', true);
 	} # admin_print_scripts()
 	
 	
@@ -122,8 +111,8 @@ class nav_menu extends WP_Widget {
 	 **/
 
 	function admin_print_styles() {
-		$folder = plugin_dir_url(__FILE__) . 'css/';
-		wp_enqueue_style('nav-menus', $folder . 'admin.css', null, '20090422');
+		$folder = plugin_dir_url(__FILE__) . 'css';
+		wp_enqueue_style('nav-menus', $folder . '/admin.css', null, '20090422');
 	} # admin_print_styles()
 	
 	
@@ -164,8 +153,6 @@ class nav_menu extends WP_Widget {
 				. $before_title . $title . $after_title
 				. $after_widget;
 			return;
-		} elseif ( !$items ) {
-			return;
 		}
 		
 		if ( is_page() ) {
@@ -181,8 +168,7 @@ class nav_menu extends WP_Widget {
 			} else {
 				$cache_id = "$widget_id-search";
 			}
-			$cache = get_transient('nav_menu_cache');
-			$o = isset($cache[$cache_id]) ? $cache[$cache_id] : false;
+			$o = get_transient($cache_id);
 		}
 		
 		if ( !sem_widget_cache_debug && $o ) {
@@ -191,6 +177,10 @@ class nav_menu extends WP_Widget {
 		}
 		
 		nav_menu::cache_pages();
+		
+		if ( !$items ) {
+			$items = nav_menu::default_items();
+		}
 		
 		ob_start();
 		
@@ -202,7 +192,6 @@ class nav_menu extends WP_Widget {
 		echo '<ul>' . "\n";
 		
 		foreach ( $items as $item ) {
-			$item['desc'] = $desc;
 			switch ( $item['type'] ) {
 			case 'home':
 				nav_menu::display_home($item);
@@ -225,8 +214,7 @@ class nav_menu extends WP_Widget {
 		if ( is_page() ) {
 			update_post_meta($page_id, $cache_id, $o);
 		} else {
-			$cache[$cache_id] = $o;
-			set_transient('nav_menu_cache', $cache);
+			set_transient($cache_id, $o);
 		}
 		
 		echo $o;
@@ -324,12 +312,14 @@ class nav_menu extends WP_Widget {
 		if ( !$page || $page->post_parent != 0 && get_post_meta($page->ID, '_widgets_exclude', true) )
 			return;
 		
-		if ( is_page() )
-			$page_id = $GLOBALS['wp_the_query']->get_queried_object_id();
-		elseif ( get_option('show_on_front') == 'page' )
+		if ( is_page() ) {
+			global $wp_the_query;
+			$page_id = $wp_the_query->get_queried_object_id();
+		} elseif ( get_option('show_on_front') == 'page' ) {
 			$page_id = (int) get_option('page_for_posts');
-		else
+		} else {
 			$page_id = 0;
+		}
 		
 		if ( !isset($label) || $label === '' )
 			$label = get_post_meta($page->ID, '_widgets_label', true);
@@ -340,8 +330,8 @@ class nav_menu extends WP_Widget {
 		
 		$url = clean_url(get_permalink($page->ID));
 		
-		$ancestors = wp_cache_get('page_ancestors_' . $page_id, 'widget');
-		$children = wp_cache_get('page_children_' . $page->ID, 'widget');
+		$ancestors = wp_cache_get($page_id, 'page_ancestors');
+		$children = wp_cache_get($page->ID, 'page_children');
 		
 		$classes = array();
 		$link = $label;
@@ -425,7 +415,7 @@ class nav_menu extends WP_Widget {
 			$page = null;
 		}
 		
-		$ancestors = wp_cache_get('page_ancestors_' . $page_id, 'widget');
+		$ancestors = wp_cache_get($page_id, 'page_ancestors');
 		if ( $ancestors === false ) {
 			$ancestors = array();
 			while ( $page && $page->post_parent != 0 ) {
@@ -433,7 +423,7 @@ class nav_menu extends WP_Widget {
 				$page = get_page($page->post_parent);
 			}
 			$ancestors = array_reverse($ancestors);
-			wp_cache_set('page_ancestors_' . $page_id, $ancestors, 'widget');
+			wp_cache_set($page_id, $ancestors, 'page_ancestors');
 		}
 		
 		$parent_ids = $ancestors;
@@ -443,7 +433,7 @@ class nav_menu extends WP_Widget {
 		
 		$cached = true;
 		foreach ( $parent_ids as $parent_id ) {
-			$cached = is_array(wp_cache_get('page_children_' . $parent_id, 'widget'));
+			$cached = is_array(wp_cache_get($parent_id, 'page_children'));
 			if ( $cached === false )
 				break;
 		}
@@ -496,13 +486,13 @@ class nav_menu extends WP_Widget {
 					unset($child_ids[$key]);
 			}
 			
-			wp_cache_set('page_children_' . $parent, $child_ids, 'widget');
+			wp_cache_set($parent, $child_ids, 'page_children');
 		}
 		
 		foreach ( $all_ancestors as $child_id => $parent_ids ) {
 			while ( $parent_ids[0] )
 				$parent_ids = array_merge($all_ancestors[$parent_ids[0]], $parent_ids);
-			wp_cache_set('page_ancestors_' . $child_id, $parent_ids, 'widget');
+			wp_cache_set($child_id, $parent_ids, 'page_ancestors');
 		}
 	} # cache_pages()
 	
@@ -721,7 +711,7 @@ class nav_menu extends WP_Widget {
 		echo '<div class="nav_menu_item_defaults" style="display: none;">' . "\n";
 		
 		echo '<div class="nav_menu_item_blank">' . "\n"
-			. '<p>' . __('Empty Navigation Menu', 'nav-menus') . '</p>' . "\n"
+			. '<p>' . __('Empty Navigation Menu. Leave it empty to populate it automatically.', 'nav-menus') . '</p>' . "\n"
 			. '</div>' . "\n";
 		
 		$default_items = array(
@@ -800,10 +790,6 @@ class nav_menu extends WP_Widget {
 		
 		echo '<div class="nav_menu_item_sortables">' . "\n";
 		
-		// autofill empty widgets with default items
-		if ( !$items )
-			$items = $default_items;
-		
 		foreach ( $items as $item ) {
 			$label = $item['label'];
 			$type = $item['type'];
@@ -857,7 +843,7 @@ class nav_menu extends WP_Widget {
 		
 		if ( !$items ) {
 			echo '<div class="nav_menu_item_blank">' . "\n"
-				. '<p>' . __('Empty Navigation Menu', 'nav-menus') . '</p>' . "\n"
+				. '<p>' . __('Empty Navigation Menu. Leave it empty to populate it automatically.', 'nav-menus') . '</p>' . "\n"
 				. '</div>' . "\n";
 		}
 		
@@ -883,6 +869,43 @@ class nav_menu extends WP_Widget {
 	
 	
 	/**
+	 * default_items()
+	 *
+	 * @return array $items
+	 **/
+
+	function default_items() {
+		$items = array(
+			array(
+				'type' => 'home',
+				'label' => __('Home', 'sem-reloaded'),
+				),
+			);
+		
+		$roots = wp_cache_get(0, 'page_children');
+		
+		if ( $roots ) {
+			foreach ( $roots as $root_id ) {
+				$page = get_page($root_id);
+				$label = get_post_meta('_widgets_label', $page->ID, true);
+				if ( $label === '' )
+					$label = $page->post_title;
+				if ( $label === '' )
+					$label = __('Untitled', 'sem-reloaded');
+					
+				$items[] = array(
+					'type' => 'page',
+					'ref' => $root_id,
+					'label' => $label,
+					);
+			}
+		}
+		
+		return $items;
+	} # default_items()
+	
+	
+	/**
 	 * flush_cache()
 	 *
 	 * @param mixed $in
@@ -890,16 +913,24 @@ class nav_menu extends WP_Widget {
 	 **/
 
 	function flush_cache($in = null) {
-		$widgets = get_option('widget_nav_menu');
-		unset($widgets['_multiwidget']);
+		$cache_ids = array();
 		
-		if ( $widgets ) {
-			delete_transient('nav_menu_cache');
-			foreach ( array_keys($widgets) as $widget_id ) {
-				$widget_id = "_nav_menu-$widget_id";
-				delete_post_meta_by_key($widget_id);
-			}
+		$widgets = get_option("widget_nav_menu");
+		if ( !$widgets )
+			return $in;
+		unset($widgets['_multiwidget']);
+		foreach ( array_keys($widgets) as $widget_id ) {
+			$cache_ids[] = "nav_menu-$widget_id";
 		}
+		
+		foreach ( $cache_ids as $cache_id ) {
+			foreach ( array('home', 'blog', 'search') as $context )
+				delete_transient("$cache_id-$context");
+			delete_post_meta_by_key("_$cache_id");
+		}
+		
+		wp_cache_flush('page_children');
+		wp_cache_flush('page_ancestors');
 		
 		return $in;
 	} # flush_cache()
