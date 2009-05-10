@@ -916,12 +916,13 @@ class nav_menu extends WP_Widget {
 		$cache_ids = array();
 		
 		$widgets = get_option("widget_nav_menu");
+		
 		if ( !$widgets )
 			return $in;
 		unset($widgets['_multiwidget']);
-		foreach ( array_keys($widgets) as $widget_id ) {
+		
+		foreach ( array_keys($widgets) as $widget_id )
 			$cache_ids[] = "nav_menu-$widget_id";
-		}
 		
 		foreach ( $cache_ids as $cache_id ) {
 			foreach ( array('home', 'blog', 'search') as $context )
