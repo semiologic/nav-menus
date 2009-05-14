@@ -925,13 +925,20 @@ class nav_menu extends WP_Widget {
 			$cache_ids[] = "nav_menu-$widget_id";
 		
 		foreach ( $cache_ids as $cache_id ) {
-			foreach ( array('home', 'blog', 'search') as $context )
-				delete_transient("$cache_id-$context");
+			delete_transient($cache_id);
 			delete_post_meta_by_key("_$cache_id");
 		}
 		
-		wp_cache_flush('page_children');
-		wp_cache_flush('page_ancestors');
+		if ( wp_cache_get(0, 'page_children') !== false ) {
+			global $wpdb;
+			$page_ids = $wpdb->get_col("SELECT ID FROM $wpdb->posts WHERE post_type = 'page'");
+			foreach ( $page_ids as $page_id ) {
+				wp_cache_delete($page_id, 'page_ancestors');
+				wp_cache_delete($page_id, 'page_children');
+			}
+			wp_cache_delete(0, 'page_ancestors');
+			wp_cache_delete(0, 'page_children');
+		}
 		
 		return $in;
 	} # flush_cache()
