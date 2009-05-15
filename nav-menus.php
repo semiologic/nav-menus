@@ -18,7 +18,7 @@ http://www.mesoconcepts.com/license/
 **/
 
 
-load_plugin_textdomain('nav-menus', null, plugin_dir_path(__FILE__) . '/lang');
+load_plugin_textdomain('nav-menus', null, dirname(__FILE__) . '/lang');
 
 
 /**
