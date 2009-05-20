@@ -483,12 +483,8 @@ class nav_menu extends WP_Widget {
 		$all_ancestors = array();
 		
 		foreach ( $children as $parent => $child_ids ) {
-			foreach ( $child_ids as $key => $child_id ) {
+			foreach ( $child_ids as $key => $child_id )
 				$all_ancestors[$child_id][] = $parent;
-				if ( get_post_meta($child_id, '_widgets_exclude', true) )
-					unset($child_ids[$key]);
-			}
-			
 			wp_cache_set($parent, $child_ids, 'page_children');
 		}
 		
