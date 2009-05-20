@@ -161,14 +161,16 @@ class nav_menu extends WP_Widget {
 			$cache_id = "_$widget_id";
 			$o = get_post_meta($page_id, $cache_id, true);
 		} else {
+			$cache_id = "$widget_id";
 			if ( is_home() && !is_paged() ) {
-				$cache_id = "$widget_id-home";
+				$context = "home";
 			} elseif ( !is_search() && !is_404() ) {
-				$cache_id = "$widget_id-blog";
+				$context = "blog";
 			} else {
-				$cache_id = "$widget_id-search";
+				$context = "search";
 			}
-			$o = get_transient($cache_id);
+			$cache = get_transient($cache_id);
+			$o = isset($cache[$context]) ? $cache[$context] : false;
 		}
 		
 		if ( !sem_widget_cache_debug && $o ) {
@@ -214,7 +216,8 @@ class nav_menu extends WP_Widget {
 		if ( is_page() ) {
 			update_post_meta($page_id, $cache_id, $o);
 		} else {
-			set_transient($cache_id, $o);
+			$cache[$context] = $o;
+			set_transient($cache_id, $cache);
 		}
 		
 		echo $o;
@@ -232,7 +235,7 @@ class nav_menu extends WP_Widget {
 		extract($item, EXTR_SKIP);
 		if ( $label === '' )
 			$label = __('Home', 'nav-menus');
-		$url = clean_url(user_trailingslashit(get_option('home')));
+		$url = esc_url(user_trailingslashit(get_option('home')));
 		
 		$classes = array('nav_home');
 		$link = $label;
@@ -246,7 +249,7 @@ class nav_menu extends WP_Widget {
 			return nav_menu::display_page($item);
 		} else {
 			if ( !is_front_page() || is_front_page() && is_paged() )
-				$link = '<a href="' . $url . '" title="' . attr(get_option('blogname')) . '">'
+				$link = '<a href="' . $url . '" title="' . esc_attr(get_option('blogname')) . '">'
 					. $link
 					. '</a>';
 			if ( !is_search() && !is_404() && !is_page() )
@@ -277,7 +280,7 @@ class nav_menu extends WP_Widget {
 		extract($item, EXTR_SKIP);
 		if ( $label === '' )
 			$label = __('Untitled', 'nav-menus');
-		$url = clean_url($ref);
+		$url = esc_url($ref);
 		if ( !$url || $url == 'http://' )
 			return;
 		
@@ -287,7 +290,7 @@ class nav_menu extends WP_Widget {
 		else
 			$classes[] = 'nav_leaf';
 		
-		$link = '<a href="' . $url . '" title="' . attr($label) . '">'
+		$link = '<a href="' . $url . '" title="' . esc_attr($label) . '">'
 			. $label
 			. '</a>';
 		
@@ -328,7 +331,7 @@ class nav_menu extends WP_Widget {
 		if ( $label === '' )
 			$label = __('Untitled', 'nav-menus');
 		
-		$url = clean_url(get_permalink($page->ID));
+		$url = esc_url(get_permalink($page->ID));
 		
 		$ancestors = wp_cache_get($page_id, 'page_ancestors');
 		$children = wp_cache_get($page->ID, 'page_children');
@@ -339,7 +342,7 @@ class nav_menu extends WP_Widget {
 		if ( get_option('show_on_front') == 'page' && get_option('page_on_front') == $page->ID ) {
 			$classes[] = 'nav_home';
 			if ( !is_front_page() || is_font_page() && is_paged() )
-				$link = '<a href="' . $url . '" title="' . attr($label) . '">'
+				$link = '<a href="' . $url . '" title="' . esc_attr($label) . '">'
 					. $link
 					. '</a>';
 			if ( is_front_page() || in_array($page->ID, $ancestors) )
@@ -347,7 +350,7 @@ class nav_menu extends WP_Widget {
 		} elseif ( get_option('show_on_front') == 'page' && get_option('page_for_posts') == $page->ID ) {
 			$classes[] = 'nav_blog';
 			if ( !is_search() && !is_404() && ( !is_home() || is_home() && is_paged() ) )
-				$link = '<a href="' . $url . '" title="' . attr($label) . '">'
+				$link = '<a href="' . $url . '" title="' . esc_attr($label) . '">'
 					. $link
 					. '</a>';
 			if ( !is_search() && !is_404() && ( !is_page() || in_array($page->ID, $ancestors) ) )
@@ -359,7 +362,7 @@ class nav_menu extends WP_Widget {
 				$classes[] = 'nav_leaf';
 			
 			if ( $page->ID != $page_id )
-				$link = '<a href="' . $url . '" title="' . attr($label) . '">'
+				$link = '<a href="' . $url . '" title="' . esc_attr($label) . '">'
 					. $link
 					. '</a>';
 			
