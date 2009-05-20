@@ -61,7 +61,7 @@ class nav_menu extends WP_Widget {
 
 	function editor_init() {
 		if ( !class_exists('widget_utils') )
-			include dirname(__FILE__) . '/widget-utils.php';
+			include dirname(__FILE__) . '/widget-utils/widget-utils.php';
 		widget_utils::page_meta_boxes();
 		add_action('page_widget_config_affected', array('nav_menu', 'widget_config_affected'));
 	} # editor_init()
