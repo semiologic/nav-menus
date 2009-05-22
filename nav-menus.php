@@ -649,7 +649,7 @@ class nav_menu extends WP_Widget {
 			. __('Title:', 'nav-menus') . '<br />' . "\n"
 			. '<input type="text" class="widefat"'
 				. ' name="' . $this->get_field_name('title') . '"'
-				. ' value="' . attribute_escape($title) . '"'
+				. ' value="' . esc_attr($title) . '"'
 				. ' />'
 			. '</p>' . "\n";
 		
@@ -676,9 +676,9 @@ class nav_menu extends WP_Widget {
 		echo '<select class="nav_menu_item_select"'
 			. ' name="' . $this->get_field_name('dropdown') . '">' . "\n"
 			. '<option value="">'
-				. attribute_escape(__('- Select a menu item -', 'nav-menus'))
+				. esc_attr(__('- Select a menu item -', 'nav-menus'))
 				. '</option>' . "\n"
-			. '<optgroup label="' . attribute_escape(__('Special', 'nav-menu')) . '">' . "\n"
+			. '<optgroup label="' . esc_attr(__('Special', 'nav-menu')) . '">' . "\n"
 			. '<option value="home" class="nav_menu_item_home">'
 				. __('Home', 'nav-menu')
 				. '</option>' . "\n"
@@ -687,13 +687,13 @@ class nav_menu extends WP_Widget {
 				. '</option>' . "\n"
 			. '</optgroup>' . "\n"
 			. '<optgroup class="nav_menu_item_pages"'
-				. ' label="' . attribute_escape(__('Pages', 'nav-menu')) . '"'
+				. ' label="' . esc_attr(__('Pages', 'nav-menu')) . '"'
 				. '>' . "\n"
 			;
 		
 		foreach ( $pages as $page ) {
 			echo '<option value="page-' . $page->ID . '">'
-				. attribute_escape($page->post_label)
+				. esc_attr($page->post_label)
 				. '</option>' . "\n";
 		}
 		
@@ -760,7 +760,7 @@ class nav_menu extends WP_Widget {
 				. '<div class="nav_menu_item_data">' ."\n"
 				. '<input type="text" class="nav_menu_item_label" disabled="disabled"'
 					. ' name="' . $this->get_field_name('items') . '[label][]"'
-					. ' value="' . attribute_escape($label) . '"'
+					. ' value="' . esc_attr($label) . '"'
 					. ' />' . "\n"
 				. '&nbsp;'
 				. '<input type="button" class="nav_menu_item_remove" disabled="disabled"'
@@ -816,7 +816,7 @@ class nav_menu extends WP_Widget {
 				. '<div class="nav_menu_item_data">' ."\n"
 				. '<input type="text" class="nav_menu_item_label"'
 					. ' name="' . $this->get_field_name('items') . '[label][]"'
-					. ' value="' . attribute_escape($label) . '"'
+					. ' value="' . esc_attr($label) . '"'
 					. ' />' . "\n"
 				. '&nbsp;'
 				. '<input type="button" class="nav_menu_item_remove" value="&nbsp;-&nbsp;" />' . "\n"
