@@ -22,6 +22,9 @@ http://www.mesoconcepts.com/license/
 
 load_plugin_textdomain('nav-menus', null, dirname(__FILE__) . '/lang');
 
+if ( !defined('widget_utils_textdomain') )
+	define('widget_utils_textdomain', 'nav-menus');
+
 
 /**
  * nav_menu
