@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-05-03 19:22+0200\n"
+"POT-Creation-Date: 2009-05-24 18:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,66 +16,104 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: nav-menus.php:77
+#: nav-menus.php:80
 msgid "Nav Menus"
 msgstr ""
 
-#: nav-menus.php:139
+#: nav-menus.php:130
 msgid "A navigation menu"
 msgstr ""
 
-#: nav-menus.php:145
+#: nav-menus.php:136
 msgid "Nav Menu"
 msgstr ""
 
-#: nav-menus.php:246 nav-menus.php:694 nav-menus.php:730
+#: nav-menus.php:239 nav-menus.php:685 nav-menus.php:721 nav-menus.php:882
 msgid "Home"
 msgstr ""
 
-#: nav-menus.php:291 nav-menus.php:339
+#: nav-menus.php:284 nav-menus.php:334 nav-menus.php:895
 msgid "Untitled"
 msgstr ""
 
-#: nav-menus.php:656
+#: nav-menus.php:647
 msgid "Config"
 msgstr ""
 
-#: nav-menus.php:660
+#: nav-menus.php:651
 msgid "Title:"
 msgstr ""
 
-#: nav-menus.php:674
+#: nav-menus.php:665
 msgid "Show Descriptions"
 msgstr ""
 
-#: nav-menus.php:677
+#: nav-menus.php:668
 msgid "Menu Items"
 msgstr ""
 
-#: nav-menus.php:690
+#: nav-menus.php:681
 msgid "- Select a menu item -"
 msgstr ""
 
-#: nav-menus.php:692
+#: nav-menus.php:683
 msgid "Special"
 msgstr ""
 
-#: nav-menus.php:697
+#: nav-menus.php:688
 msgid "Url"
 msgstr ""
 
-#: nav-menus.php:701
+#: nav-menus.php:692
 msgid "Pages"
 msgstr ""
 
-#: nav-menus.php:724 nav-menus.php:860
-msgid "Empty Navigation Menu"
+#: nav-menus.php:715 nav-menus.php:847
+msgid "Empty Navigation Menu. Leave it empty to populate it automatically."
 msgstr ""
 
-#: nav-menus.php:735
+#: nav-menus.php:726
 msgid "Url Label"
 msgstr ""
 
-#: nav-menus.php:878
+#: nav-menus.php:865
 msgid "Browse"
+msgstr ""
+
+#: widget-utils/widget-utils.php:27
+msgid "This Post In Widgets"
+msgstr ""
+
+#: widget-utils/widget-utils.php:46
+msgid "This Page In Widgets"
+msgstr ""
+
+#: widget-utils/widget-utils.php:113
+msgid "The following fields let you configure options shared by:"
+msgstr ""
+
+#: widget-utils/widget-utils.php:121
+msgid ""
+"It will <b>NOT</b> affect anything else. In particular WordPress's built-in "
+"Pages widget."
+msgstr ""
+
+#: widget-utils/widget-utils.php:128
+msgid "Title"
+msgstr ""
+
+#: widget-utils/widget-utils.php:140
+msgid "Description"
+msgstr ""
+
+#: widget-utils/widget-utils.php:151
+msgid "Exclude"
+msgstr ""
+
+#: widget-utils/widget-utils.php:163
+msgid "Exclude this entry from automatically generated lists"
+msgstr ""
+
+#: widget-utils/widget-utils.php:182
+msgid "... except for silo stubs, silo maps and smart links."
 msgstr ""
