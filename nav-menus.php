@@ -2,7 +2,7 @@
 /*
 Plugin Name: Nav Menus
 Plugin URI: http://www.semiologic.com/software/nav-menus/
-Description: WordPress widgets that let you create navigation menus
+Description: WordPress widgets that let you create navigation menus.
 Version: 2.0 RC
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
@@ -346,7 +346,7 @@ class nav_menu extends WP_Widget {
 		
 		if ( get_option('show_on_front') == 'page' && get_option('page_on_front') == $page->ID ) {
 			$classes[] = 'nav_home';
-			if ( !is_front_page() || is_font_page() && is_paged() )
+			if ( !is_front_page() || is_front_page() && is_paged() )
 				$link = '<a href="' . $url . '" title="' . esc_attr($label) . '">'
 					. $link
 					. '</a>';
@@ -509,6 +509,9 @@ class nav_menu extends WP_Widget {
 	 **/
 
 	function is_local_url($url) {
+		if ( in_array(substr($url, 0, 1), array('?', '#')) || strpos($url, '://') === false )
+			return true;
+		
 		static $site_domain;
 		
 		if ( !isset($site_domain) ) {
