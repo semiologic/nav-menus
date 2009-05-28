@@ -161,8 +161,8 @@ class nav_menu extends WP_Widget {
 		}
 		
 		if ( is_page() ) {
-			global $wp_query;
-			$page_id = $wp_query->get_queried_object_id();
+			global $wp_the_query;
+			$page_id = $wp_the_query->get_queried_object_id();
 			$cache_id = "_$widget_id";
 			$o = get_post_meta($page_id, $cache_id, true);
 		} else {
