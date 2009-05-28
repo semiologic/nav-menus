@@ -938,7 +938,7 @@ class nav_menu extends WP_Widget {
 		
 		if ( wp_cache_get(0, 'page_children') !== false ) {
 			global $wpdb;
-			$page_ids = $wpdb->get_col("SELECT ID FROM $wpdb->posts WHERE post_type = 'page'");
+			$page_ids = $wpdb->get_col("SELECT ID FROM $wpdb->posts WHERE post_type = 'page' AND post_status = 'publish'");
 			foreach ( $page_ids as $page_id ) {
 				wp_cache_delete($page_id, 'page_ancestors');
 				wp_cache_delete($page_id, 'page_children');
