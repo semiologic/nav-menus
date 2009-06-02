@@ -329,8 +329,7 @@ class nav_menu extends WP_Widget {
 			$page_id = 0;
 		}
 		
-		if ( !isset($label) || $label === '' )
-			$label = get_post_meta($page->ID, '_widgets_label', true);
+		$label = get_post_meta($page->ID, '_widgets_label', true);
 		if ( $label === '' )
 			$label = $page->post_title;
 		if ( $label === '' )
