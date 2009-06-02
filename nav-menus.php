@@ -153,12 +153,8 @@ class nav_menu extends WP_Widget {
 		$instance = wp_parse_args($instance, nav_menu::defaults());
 		extract($instance, EXTR_SKIP);
 		
-		if ( is_admin() ) {
-			echo $before_widget
-				. $before_title . $title . $after_title
-				. $after_widget;
+		if ( is_admin() )
 			return;
-		}
 		
 		if ( is_page() ) {
 			global $wp_the_query;
