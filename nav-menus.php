@@ -267,7 +267,7 @@ class nav_menu extends WP_Widget {
 		if ( $desc ) {
 			$descr = get_option('blogdescription');
 			if ( $descr )
-				echo "\n" . wpautop($descr);
+				echo "\n\n" . wpautop($descr);
 		}
 		
 		echo '</li>' . "\n";
@@ -381,9 +381,9 @@ class nav_menu extends WP_Widget {
 			. $link;
 		
 		if ( $desc ) {
-			$descr = get_post_meta($page->ID, '_widgets_desc', true);
+			$descr = trim(get_post_meta($page->ID, '_widgets_desc', true));
 			if ( $descr )
-				echo "\n" . wpautop($descr);
+				echo "\n\n" . wpautop($descr);
 		}
 		
 		if ( $children && ( $page->ID == $page_id || in_array($page->ID, $ancestors) ) ) {
