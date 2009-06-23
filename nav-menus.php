@@ -6,7 +6,7 @@ Description: WordPress widgets that let you create navigation menus.
 Version: 2.0 RC
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
-Text Domain: nav-menus-info
+Text Domain: nav-menus
 Domain Path: /lang
 */
 
