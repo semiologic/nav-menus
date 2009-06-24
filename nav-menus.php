@@ -156,7 +156,7 @@ class nav_menu extends WP_Widget {
 		if ( is_admin() ) {
 			echo $before_widget
 				. ( $title
-					? ( $before_title . $title . $after_title )
+					? ( $before_title . apply_filters('widget_title', $title) . $after_title )
 					: ''
 					)
 				. $after_widget;
@@ -197,7 +197,7 @@ class nav_menu extends WP_Widget {
 		echo $before_widget;
 		
 		if ( $title )
-			echo $before_title . $title . $after_title;
+			echo $before_title . apply_filters('widget_title', $title) . $after_title;
 		
 		echo '<ul>' . "\n";
 		
