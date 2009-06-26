@@ -136,6 +136,18 @@ class nav_menu extends WP_Widget {
 			'width' => 330,
 			);
 		
+		if ( get_option('widget_nav_menu') === false ) {
+			foreach ( array(
+				'nav_menus' => 'upgrade',
+				) as $ops => $method ) {
+				if ( get_option($ops) !== false ) {
+					$this->alt_option_name = $ops;
+					add_filter('option_' . $ops, array('nav_menu', $method));
+					break;
+				}
+			}
+		}
+		
 		$this->WP_Widget('nav_menu', __('Nav Menu', 'nav-menus'), $widget_ops, $control_ops);
 	} # nav_menu()
 	
@@ -952,5 +964,33 @@ class nav_menu extends WP_Widget {
 		
 		return $in;
 	} # flush_cache()
+	
+	
+	/**
+	 * upgrade()
+	 *
+	 * @param array $ops
+	 * @return array $ops
+	 **/
+
+	function upgrade($ops) {
+		$widget_contexts = class_exists('widget_contexts')
+			? get_option('widget_contexts')
+			: false;
+		
+		unset($ops['header']);
+		unset($ops['footer']);
+		
+		foreach ( $ops as $k => $o ) {
+			if ( isset($widget_contexts['nav_menu-' . $k]) ) {
+				$ops[$k]['widget_contexts'] = $widget_contexts['nav_menu-' . $k];
+				unset($widget_contexts['nav_menu-' . $k]);
+			}
+		}
+		
+		update_option('widget_nav_menu', $ops);
+		
+		return $ops;
+	} # upgrade()
 } # nav_menu
 ?>
