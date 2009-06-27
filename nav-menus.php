@@ -995,9 +995,42 @@ class nav_menu extends WP_Widget {
 		foreach ( $ops as $k => $o ) {
 			if ( isset($widget_contexts['nav_menu-' . $k]) ) {
 				$ops[$k]['widget_contexts'] = $widget_contexts['nav_menu-' . $k];
-				unset($widget_contexts['nav_menu-' . $k]);
 			}
 		}
+		
+		$extra = get_option('silo_widgets');
+		
+		if ( $extra !== false ) {
+			foreach ( $extra as $k => $o ) {
+				if ( !isset($ops[$k]) ) {
+					$ops[$k] = $extra[$k];
+					if ( isset($widget_contexts['silo_widget-' . $k]) ) {
+						$ops[$k]['widget_contexts'] = $widget_contexts['silo_widget-' . $k];
+					}
+				} else {
+					unset($extra[$k]);
+				}
+			}
+		}
+		
+		$sidebars_widgets = wp_get_sidebars_widgets(false);
+		$keys = array_keys($extra);
+		
+		foreach ( $sidebars_widgets as $sidebar => $widgets ) {
+			if ( !is_array($widgets) )
+				continue;
+			foreach ( $keys as $k ) {
+				$key = array_search("silo_widget-$k", $widgets);
+				if ( $key !== false ) {
+					$sidebars_widgets[$sidebar][$key] = 'nav_menu-' . $k;
+					unset($keys[array_search($k, $keys)]);
+				}
+			}
+		}
+		
+		wp_set_sidebars_widgets($sidebars_widgets);
+		global $_wp_sidebars_widgets;
+		$_wp_sidebars_widgets = array();
 		
 		return $ops;
 	} # upgrade()
