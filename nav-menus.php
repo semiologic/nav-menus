@@ -34,6 +34,7 @@ if ( !defined('widget_utils_textdomain') )
 
 if ( !defined('sem_widget_cache_debug') )
 	define('sem_widget_cache_debug', false);
+
 add_action('widgets_init', array('nav_menu', 'widgets_init'));
 add_action('admin_print_scripts-widgets.php', array('nav_menu', 'admin_print_scripts'));
 add_action('admin_print_styles-widgets.php', array('nav_menu', 'admin_print_styles'));
@@ -58,6 +59,27 @@ register_activation_hook(__FILE__, array('nav_menu', 'flush_cache'));
 register_deactivation_hook(__FILE__, array('nav_menu', 'flush_cache'));
 
 class nav_menu extends WP_Widget {
+	/**
+	 * init()
+	 *
+	 * @return void
+	 **/
+
+	function init() {
+		if ( get_option('widget_nav_menu') === false ) {
+			foreach ( array(
+				'nav_menus' => 'upgrade',
+				) as $ops => $method ) {
+				if ( get_option($ops) !== false ) {
+					$this->alt_option_name = $ops;
+					add_filter('option_' . $ops, array(get_class($this), $method));
+					break;
+				}
+			}
+		}
+	} # init()
+	
+	
 	/**
 	 * editor_init()
 	 *
@@ -136,18 +158,7 @@ class nav_menu extends WP_Widget {
 			'width' => 330,
 			);
 		
-		if ( get_option('widget_nav_menu') === false ) {
-			foreach ( array(
-				'nav_menus' => 'upgrade',
-				) as $ops => $method ) {
-				if ( get_option($ops) !== false ) {
-					$this->alt_option_name = $ops;
-					add_filter('option_' . $ops, array('nav_menu', $method));
-					break;
-				}
-			}
-		}
-		
+		$this->init();
 		$this->WP_Widget('nav_menu', __('Nav Menu', 'nav-menus'), $widget_ops, $control_ops);
 	} # nav_menu()
 	
@@ -987,8 +998,6 @@ class nav_menu extends WP_Widget {
 				unset($widget_contexts['nav_menu-' . $k]);
 			}
 		}
-		
-		update_option('widget_nav_menu', $ops);
 		
 		return $ops;
 	} # upgrade()
