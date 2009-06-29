@@ -215,12 +215,14 @@ class nav_menu extends WP_Widget {
 			$items = nav_menu::default_items();
 		}
 		
+		$title = apply_filters('widget_title', $title);
+		
 		ob_start();
 		
 		echo $before_widget;
 		
 		if ( $title )
-			echo $before_title . apply_filters('widget_title', $title) . $after_title;
+			echo $before_title . $title . $after_title;
 		
 		echo '<ul>' . "\n";
 		
@@ -1013,7 +1015,12 @@ class nav_menu extends WP_Widget {
 			}
 		}
 		
+		global $wp_filter;
+		$filter_backup = isset($wp_filter['sidebars_widgets']) ? $wp_filter['sidebars_widgets'] : array();
+		unset($wp_filter['sidebars_widgets']);
 		$sidebars_widgets = wp_get_sidebars_widgets(false);
+		$wp_filter['sidebars_widgets'] = $filter_backup;
+		
 		$keys = array_keys($extra);
 		
 		foreach ( $sidebars_widgets as $sidebar => $widgets ) {
