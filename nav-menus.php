@@ -102,7 +102,7 @@ class nav_menu extends WP_Widget {
 
 	function widget_config_affected() {
 		echo '<li>'
-			. __('Nav Menus', 'nav-menus')
+			. __('Nav Menu Widgets', 'nav-menus')
 			. '</li>' . "\n";
 	} # widget_config_affected()
 	
