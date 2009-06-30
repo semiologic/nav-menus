@@ -984,8 +984,11 @@ class nav_menu extends WP_Widget {
 			foreach ( $roots as $root_id ) {
 				if ( $root_id == $front_page_id )
 					continue;
+				if ( get_post_meta($root_id, '_widgets_exclude', true) )
+					continue;
+				
 				$page = get_page($root_id);
-				$label = get_post_meta('_widgets_label', $page->ID, true);
+				$label = get_post_meta($page->ID, '_widgets_label', true);
 				if ( (string) $label === '' )
 					$label = $page->post_title;
 				if ( (string) $label === '' )
