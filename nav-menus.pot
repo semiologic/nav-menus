@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-05-24 18:15+0200\n"
+"POT-Creation-Date: 2009-07-07 23:04+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,67 +16,68 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: nav-menus.php:80
-msgid "Nav Menus"
+#: nav-menus.php:109
+msgid "Nav Menu Widgets"
 msgstr ""
 
-#: nav-menus.php:130
+#: nav-menus.php:159
 msgid "A navigation menu"
 msgstr ""
 
-#: nav-menus.php:136
+#: nav-menus.php:166
 msgid "Nav Menu"
 msgstr ""
 
-#: nav-menus.php:239 nav-menus.php:685 nav-menus.php:721 nav-menus.php:882
+#: nav-menus.php:276 nav-menus.php:762 nav-menus.php:804 nav-menus.php:980
 msgid "Home"
 msgstr ""
 
-#: nav-menus.php:284 nav-menus.php:334 nav-menus.php:895
+#: nav-menus.php:321 nav-menus.php:371 nav-menus.php:778 nav-menus.php:818
+#: nav-menus.php:850 nav-menus.php:911 nav-menus.php:1002
 msgid "Untitled"
 msgstr ""
 
-#: nav-menus.php:647
+#: nav-menus.php:723
 msgid "Config"
 msgstr ""
 
-#: nav-menus.php:651
+#: nav-menus.php:727
 msgid "Title:"
 msgstr ""
 
-#: nav-menus.php:665
+#: nav-menus.php:742
 msgid "Show Descriptions"
 msgstr ""
 
-#: nav-menus.php:668
+#: nav-menus.php:745
 msgid "Menu Items"
 msgstr ""
 
-#: nav-menus.php:681
+#: nav-menus.php:758
 msgid "- Select a menu item -"
 msgstr ""
 
-#: nav-menus.php:683
+#: nav-menus.php:760
 msgid "Special"
 msgstr ""
 
-#: nav-menus.php:688
+#: nav-menus.php:765
 msgid "Url"
 msgstr ""
 
-#: nav-menus.php:692
+#: nav-menus.php:769
 msgid "Pages"
 msgstr ""
 
-#: nav-menus.php:715 nav-menus.php:847
+#: nav-menus.php:798 nav-menus.php:945
 msgid "Empty Navigation Menu. Leave it empty to populate it automatically."
 msgstr ""
 
-#: nav-menus.php:726
+#: nav-menus.php:809
 msgid "Url Label"
 msgstr ""
 
-#: nav-menus.php:865
+#: nav-menus.php:963
 msgid "Browse"
 msgstr ""
 
