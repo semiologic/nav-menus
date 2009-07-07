@@ -52,6 +52,9 @@ foreach ( array(
 		'update_option_sem5_options',
 		'update_option_sem6_options',
 		'generate_rewrite_rules',
+		
+		'flush_cache',
+		'update_option_db_version',
 		) as $hook)
 	add_action($hook, array('nav_menu', 'flush_cache'));
 
@@ -69,6 +72,7 @@ class nav_menu extends WP_Widget {
 		if ( get_option('widget_nav_menu') === false ) {
 			foreach ( array(
 				'nav_menus' => 'upgrade',
+				'silo_options' => 'upgrade_1x',
 				) as $ops => $method ) {
 				if ( get_option($ops) !== false ) {
 					$this->alt_option_name = $ops;
@@ -357,7 +361,8 @@ class nav_menu extends WP_Widget {
 			$page_id = 0;
 		}
 		
-		$label = get_post_meta($page->ID, '_widgets_label', true);
+		if ( (string) $label === '' )
+			$label = get_post_meta($page->ID, '_widgets_label', true);
 		if ( (string) $label === '' )
 			$label = $page->post_title;
 		if ( (string) $label === '' )
@@ -1100,6 +1105,7 @@ class nav_menu extends WP_Widget {
 				if ( $key !== false ) {
 					$sidebars_widgets[$sidebar][$key] = 'nav_menu-' . $k;
 					unset($keys[array_search($k, $keys)]);
+					continue;
 				}
 			}
 		}
@@ -1109,5 +1115,44 @@ class nav_menu extends WP_Widget {
 		
 		return $ops;
 	} # upgrade()
+	
+	
+	/**
+	 * upgrade_1x()
+	 *
+	 * @param array $ops
+	 * @return array $ops
+	 **/
+
+	function upgrade_1x($ops) {
+		if ( is_array($ops['exclude']) ) {
+			foreach ( $ops['exclude'] as $post_id )
+				update_post_meta($post_id, '_widgets_exclude', '1');
+		}
+		
+		if ( is_admin() ) {
+			$sidebars_widgets = get_option('sidebars_widgets', array('array_version' => 3));
+		} else {
+			global $_wp_sidebars_widgets;
+			if ( !$_wp_sidebars_widgets )
+				$_wp_sidebars_widgets = get_option('sidebars_widgets', array('array_version' => 3));
+			$sidebars_widgets =& $_wp_sidebars_widgets;
+		}
+		
+		foreach ( $sidebars_widgets as $sidebar => $widgets ) {
+			if ( !is_array($widgets) )
+				continue;
+			$key = array_search('silo-pages', $widgets);
+			if ( $key !== false ) {
+				$sidebars_widgets[$sidebar][$key] = 'nav_menu-2';
+				break;
+			}
+		}
+		
+		if ( is_admin() )
+			update_option('sidebars_widgets', $sidebars_widgets);
+		
+		return $ops;
+	} # upgrade_1x()
 } # nav_menu
 ?>
