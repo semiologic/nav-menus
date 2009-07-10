@@ -3,7 +3,7 @@
 Plugin Name: Nav Menus
 Plugin URI: http://www.semiologic.com/software/nav-menus/
 Description: WordPress widgets that let you create navigation menus.
-Version: 2.0 RC
+Version: 2.0 RC2
 Author: Denis de Bernardy
 Author URI: http://www.getsemiologic.com
 Text Domain: nav-menus
@@ -20,7 +20,7 @@ http://www.mesoconcepts.com/license/
 **/
 
 
-load_plugin_textdomain('nav-menus', null, dirname(__FILE__) . '/lang');
+load_plugin_textdomain('nav-menus', false, dirname(plugin_basename(__FILE__)) . '/lang');
 
 if ( !defined('widget_utils_textdomain') )
 	define('widget_utils_textdomain', 'nav-menus');
@@ -54,7 +54,7 @@ foreach ( array(
 		'generate_rewrite_rules',
 		
 		'flush_cache',
-		'after_db_upgrade_version',
+		'after_db_upgrade',
 		) as $hook)
 	add_action($hook, array('nav_menu', 'flush_cache'));
 
@@ -156,7 +156,7 @@ class nav_menu extends WP_Widget {
 	function nav_menu() {
 		$widget_ops = array(
 			'classname' => 'nav_menu',
-			'description' => __("A navigation menu", 'nav-menus'),
+			'description' => __('A navigation menu', 'nav-menus'),
 			);
 		$control_ops = array(
 			'width' => 330,
@@ -198,11 +198,11 @@ class nav_menu extends WP_Widget {
 		} else {
 			$cache_id = "$widget_id";
 			if ( is_home() && !is_paged() ) {
-				$context = "home";
+				$context = 'home';
 			} elseif ( !is_search() && !is_404() ) {
-				$context = "blog";
+				$context = 'blog';
 			} else {
-				$context = "search";
+				$context = 'search';
 			}
 			$cache = get_transient($cache_id);
 			$o = isset($cache[$context]) ? $cache[$context] : false;
@@ -233,13 +233,13 @@ class nav_menu extends WP_Widget {
 		foreach ( $items as $item ) {
 			switch ( $item['type'] ) {
 			case 'home':
-				nav_menu::display_home($item);
+				nav_menu::display_home($item, $desc);
 				break;
 			case 'url':
 				nav_menu::display_url($item);
 				break;
 			case 'page':
-				nav_menu::display_page($item);
+				nav_menu::display_page($item, $desc);
 				break;
 			}
 		}
@@ -267,10 +267,17 @@ class nav_menu extends WP_Widget {
 	 * display_home()
 	 *
 	 * @param array $item
+	 * @param bool $desc
 	 * @return void
 	 **/
 
-	function display_home($item) {
+	function display_home($item, $desc = false) {
+		if ( get_option('show_on_front') == 'page' && get_option('page_on_front') ) {
+			$item['type'] = 'page';
+			$item['ref'] = get_option('page_on_front');
+			return nav_menu::display_page($item, $desc);
+		}
+		
 		extract($item, EXTR_SKIP);
 		if ( (string) $label === '' )
 			$label = __('Home', 'nav-menus');
@@ -279,21 +286,12 @@ class nav_menu extends WP_Widget {
 		$classes = array('nav_home');
 		$link = $label;
 		
-		if ( get_option('show_on_front') == 'page' ) {
-			$item = array(
-				'type' => 'page',
-				'ref' => get_option('page_on_front'),
-				'label' => $label,
-				);
-			return nav_menu::display_page($item);
-		} else {
-			if ( !is_front_page() || is_front_page() && is_paged() )
-				$link = '<a href="' . $url . '" title="' . esc_attr(get_option('blogname')) . '">'
-					. $link
-					. '</a>';
-			if ( !is_search() && !is_404() && !is_page() )
-				$link = '<span class="nav_active">' . $link . '</span>';
-		}
+		if ( !is_front_page() || is_front_page() && is_paged() )
+			$link = '<a href="' . $url . '" title="' . esc_attr(get_option('blogname')) . '">'
+				. $link
+				. '</a>';
+		if ( !is_search() && !is_404() && !is_page() )
+			$link = '<span class="nav_active">' . $link . '</span>';
 		
 		echo '<li class="' . implode(' ', $classes) . '">'
 			. $link;
@@ -343,10 +341,11 @@ class nav_menu extends WP_Widget {
 	 * display_page()
 	 *
 	 * @param array $item
+	 * @param bool $desc
 	 * @return void
 	 **/
 
-	function display_page($item) {
+	function display_page($item, $desc = false) {
 		extract($item, EXTR_SKIP);
 		$ref = (int) $ref;
 		$page = get_page($ref);
@@ -429,7 +428,7 @@ class nav_menu extends WP_Widget {
 					'ref' => $child_id,
 					'desc' => $desc,
 					);
-				nav_menu::display_page($item);
+				nav_menu::display_page($item, $desc);
 			}
 			echo '</ul>' . "\n";
 		}
@@ -539,7 +538,6 @@ class nav_menu extends WP_Widget {
 			AND		posts.post_parent IN ( " . implode(',', $parent_ids) . " )
 			ORDER BY posts.menu_order, posts.post_title
 			");
-		update_post_cache($pages);
 		
 		$children = array();
 		$to_cache = array();
@@ -551,8 +549,6 @@ class nav_menu extends WP_Widget {
 			$children[$page->post_parent][] = $page->ID;
 			$to_cache[] = $page->ID;
 		}
-
-		update_postmeta_cache($to_cache);
 		
 		$all_ancestors = array();
 		
@@ -567,6 +563,15 @@ class nav_menu extends WP_Widget {
 				$parent_ids = array_merge($all_ancestors[$parent_ids[0]], $parent_ids);
 			wp_cache_set($child_id, $parent_ids, 'page_ancestors');
 		}
+		
+		foreach ( array_keys($pages) as $k ) {
+			$ancestors = wp_cache_get($pages[$k]->ID, 'page_ancestors');
+			array_shift($ancestors);
+			$pages[$k]->ancestors = $ancestors;
+		}
+		
+		update_post_cache($pages);
+		update_postmeta_cache($to_cache);
 	} # cache_pages()
 	
 	
@@ -703,8 +708,7 @@ class nav_menu extends WP_Widget {
 		if ( !isset($pages) ) {
 			global $wpdb;
 			$pages = $wpdb->get_results("
-				SELECT	posts.*,
-						post_title
+				SELECT	posts.*
 				FROM	$wpdb->posts as posts
 				WHERE	posts.post_type = 'page'
 				AND		posts.post_status = 'publish'
@@ -742,10 +746,10 @@ class nav_menu extends WP_Widget {
 			. __('Show Descriptions', 'nav-menus') . "\n"
 			. '</p>' . "\n";
 		
-		echo '<h3>' . __('Menu Items') . '</h3>' . "\n";
+		echo '<h3>' . __('Menu Items', 'nav-menus') . '</h3>' . "\n";
 		
 		echo '<p>'
-			. 'Drag and drop menu items to rearrange them.'
+			. __('Drag and drop menu items to rearrange them.', 'nav-menus')
 			. '</p>' . "\n";
 		
 		echo '<div class="nav_menu_items">' . "\n";
@@ -974,39 +978,27 @@ class nav_menu extends WP_Widget {
 	 **/
 
 	function default_items() {
-		$items = array(
-			array(
-				'type' => 'home',
-				'label' => __('Home', 'sem-reloaded'),
-				),
-			);
+		$items = array(array('type' => 'home'));
 		
 		$roots = wp_cache_get(0, 'page_children');
 		
-		if ( $roots ) {
-			$front_page_id = get_option('show_on_front') == 'page'
-				? (int) get_option('page_on_front')
-				: 0;
+		if ( !$roots )
+			return $items;
+		
+		$front_page_id = get_option('show_on_front') == 'page'
+			? (int) get_option('page_on_front')
+			: 0;
+
+		foreach ( $roots as $root_id ) {
+			if ( $root_id == $front_page_id )
+				continue;
+			if ( get_post_meta($root_id, '_widgets_exclude', true) )
+				continue;
 			
-			foreach ( $roots as $root_id ) {
-				if ( $root_id == $front_page_id )
-					continue;
-				if ( get_post_meta($root_id, '_widgets_exclude', true) )
-					continue;
-				
-				$page = get_page($root_id);
-				$label = get_post_meta($page->ID, '_widgets_label', true);
-				if ( (string) $label === '' )
-					$label = $page->post_title;
-				if ( (string) $label === '' )
-					$label = __('Untitled', 'sem-reloaded');
-					
-				$items[] = array(
-					'type' => 'page',
-					'ref' => $root_id,
-					'label' => $label,
-					);
-			}
+			$items[] = array(
+				'type' => 'page',
+				'ref' => $root_id,
+				);
 		}
 		
 		return $items;
