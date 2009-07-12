@@ -10,7 +10,7 @@ jQuery(document).ready(function(){
 	});
 	
 	jQuery("div.nav_menu_item_sortables").livequery(function() {
-		var items = jQuery(this).children("div.nav_menu_item_sortables");
+		var items = jQuery(this);
 		if ( items.children("div.nav_menu_item").size() )
 			items.sortable({});
 	});

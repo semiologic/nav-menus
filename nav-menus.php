@@ -131,7 +131,7 @@ class nav_menu extends WP_Widget {
 	function admin_print_scripts() {
 		$folder = plugin_dir_url(__FILE__) . 'js';
 		wp_enqueue_script('jquery-livequery', $folder . '/jquery.livequery.js', array('jquery'),  '1.1', true);
-		wp_enqueue_script( 'nav-menus', $folder . '/admin.js', array('jquery-ui-sortable', 'jquery-livequery'),  '20090502', true);
+		wp_enqueue_script( 'nav-menus', $folder . '/admin.js', array('jquery-ui-sortable', 'jquery-livequery'),  '20090712', true);
 	} # admin_print_scripts()
 	
 	
@@ -209,6 +209,7 @@ class nav_menu extends WP_Widget {
 		}
 		
 		if ( !sem_widget_cache_debug && !is_preview() && $o ) {
+			#dump('cache');
 			echo $o;
 			return;
 		}
@@ -796,7 +797,9 @@ class nav_menu extends WP_Widget {
 		
 		echo '</div>' . "\n"; # controller
 		
-		echo '<div class="nav_menu_item_defaults" style="display: none;">' . "\n";
+		echo '<div class="nav_menu_item_defaults"'
+			. ' style="display: none;"'
+			. '>' . "\n";
 		
 		echo '<div class="nav_menu_item_blank">' . "\n"
 			. '<p>' . __('Empty Navigation Menu. Leave it empty to populate it automatically.', 'nav-menus') . '</p>' . "\n"
