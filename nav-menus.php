@@ -1022,7 +1022,9 @@ class nav_menu extends WP_Widget {
 		
 		if ( !$widgets )
 			return $in;
+		
 		unset($widgets['_multiwidget']);
+		unset($widgets['number']);
 		
 		foreach ( array_keys($widgets) as $widget_id )
 			$cache_ids[] = "nav_menu-$widget_id";
