@@ -511,9 +511,15 @@ class nav_menu extends WP_Widget {
 		
 		$cached = true;
 		foreach ( $parent_ids as $parent_id ) {
-			$cached = is_array(wp_cache_get($parent_id, 'page_children'));
+			$children_ids = wp_cache_get($parent_id, 'page_children');
+			$cached = is_array($children_ids);
 			if ( $cached === false )
 				break;
+			foreach ( $children_ids as $children_id ) {
+				$cached = is_array(wp_cache_get($childre_id, 'page_children'));
+				if ( $cached === false )
+					break 2;
+			}
 		}
 		
 		if ( $cached )
@@ -521,11 +527,22 @@ class nav_menu extends WP_Widget {
 		
 		global $wpdb;
 		
+		$root_ids = array();
+		if ( $page_id ) {
+			$parent_page = get_post($page_id);
+			while ( $parent_page->post_parent ) {
+				$root_ids[] = $parent_page->post_parent;
+				$parent_page = get_post($parent_page->post_parent);
+			}
+		}
+		$root_ids = array_merge($root_ids, array(0, $page_id, $front_page_id, $blog_page_id));
+		$root_ids = array_map('intval', $root_ids);
+		
 		$roots = (array) $wpdb->get_col("
 			SELECT	posts.ID
 			FROM	$wpdb->posts as posts
 			WHERE	posts.post_type = 'page'
-			AND		posts.post_parent IN ( 0, $page_id, $front_page_id, $blog_page_id )
+			AND		posts.post_parent IN ( " . implode(', ', $root_ids) . " )
 			");
 		
 		$parent_ids = array_merge($parent_ids, $roots, array($page_id, $front_page_id, $blog_page_id));
