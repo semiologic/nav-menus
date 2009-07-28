@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-07-10 17:40+0200\n"
+"POT-Creation-Date: 2009-07-28 13:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,60 +36,60 @@ msgstr ""
 msgid "Nav Menu"
 msgstr ""
 
-#: nav-menus.php:283 nav-menus.php:766 nav-menus.php:808
+#: nav-menus.php:284 nav-menus.php:768 nav-menus.php:812
 msgid "Home"
 msgstr ""
 
-#: nav-menus.php:319 nav-menus.php:370 nav-menus.php:782 nav-menus.php:822
-#: nav-menus.php:854 nav-menus.php:915
+#: nav-menus.php:320 nav-menus.php:372 nav-menus.php:784 nav-menus.php:826
+#: nav-menus.php:858 nav-menus.php:919
 msgid "Untitled"
 msgstr ""
 
-#: nav-menus.php:727
+#: nav-menus.php:729
 msgid "Config"
 msgstr ""
 
-#: nav-menus.php:731
+#: nav-menus.php:733
 msgid "Title:"
 msgstr ""
 
-#: nav-menus.php:746
+#: nav-menus.php:748
 msgid "Show Descriptions"
 msgstr ""
 
-#: nav-menus.php:749
+#: nav-menus.php:751
 msgid "Menu Items"
 msgstr ""
 
-#: nav-menus.php:752
+#: nav-menus.php:754
 msgid "Drag and drop menu items to rearrange them."
 msgstr ""
 
-#: nav-menus.php:762
+#: nav-menus.php:764
 msgid "- Select a menu item -"
 msgstr ""
 
-#: nav-menus.php:764
+#: nav-menus.php:766
 msgid "Special"
 msgstr ""
 
-#: nav-menus.php:769
+#: nav-menus.php:771
 msgid "Url"
 msgstr ""
 
-#: nav-menus.php:773
+#: nav-menus.php:775
 msgid "Pages"
 msgstr ""
 
-#: nav-menus.php:802 nav-menus.php:949
+#: nav-menus.php:806 nav-menus.php:953
 msgid "Empty Navigation Menu. Leave it empty to populate it automatically."
 msgstr ""
 
-#: nav-menus.php:813
+#: nav-menus.php:817
 msgid "Url Label"
 msgstr ""
 
-#: nav-menus.php:967
+#: nav-menus.php:971
 msgid "Browse"
 msgstr ""
 
