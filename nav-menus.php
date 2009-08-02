@@ -25,41 +25,15 @@ load_plugin_textdomain('nav-menus', false, dirname(plugin_basename(__FILE__)) . 
 if ( !defined('widget_utils_textdomain') )
 	define('widget_utils_textdomain', 'nav-menus');
 
+if ( !defined('sem_widget_cache_debug') )
+	define('sem_widget_cache_debug', false);
+
 
 /**
  * nav_menu
  *
  * @package Nav Menus
  **/
-
-if ( !defined('sem_widget_cache_debug') )
-	define('sem_widget_cache_debug', false);
-
-add_action('widgets_init', array('nav_menu', 'widgets_init'));
-add_action('admin_print_scripts-widgets.php', array('nav_menu', 'admin_print_scripts'));
-add_action('admin_print_styles-widgets.php', array('nav_menu', 'admin_print_styles'));
-foreach ( array('page.php', 'page-new.php') as $hook )
-	add_action('load-' . $hook, array('nav_menu', 'editor_init'));
-foreach ( array(
-		'save_post',
-		'delete_post',
-		'switch_theme',
-		'update_option_active_plugins',
-		'update_option_show_on_front',
-		'update_option_page_on_front',
-		'update_option_page_for_posts',
-		'update_option_sidebars_widgets',
-		'update_option_sem5_options',
-		'update_option_sem6_options',
-		'generate_rewrite_rules',
-		
-		'flush_cache',
-		'after_db_upgrade',
-		) as $hook)
-	add_action($hook, array('nav_menu', 'flush_cache'));
-
-register_activation_hook(__FILE__, array('nav_menu', 'flush_cache'));
-register_deactivation_hook(__FILE__, array('nav_menu', 'flush_cache'));
 
 class nav_menu extends WP_Widget {
 	/**
@@ -1172,4 +1146,32 @@ class nav_menu extends WP_Widget {
 		return $ops;
 	} # upgrade_1x()
 } # nav_menu
+
+add_action('widgets_init', array('nav_menu', 'widgets_init'));
+add_action('admin_print_scripts-widgets.php', array('nav_menu', 'admin_print_scripts'));
+add_action('admin_print_styles-widgets.php', array('nav_menu', 'admin_print_styles'));
+
+foreach ( array('page.php', 'page-new.php') as $hook )
+	add_action('load-' . $hook, array('nav_menu', 'editor_init'));
+
+foreach ( array(
+		'save_post',
+		'delete_post',
+		'switch_theme',
+		'update_option_active_plugins',
+		'update_option_show_on_front',
+		'update_option_page_on_front',
+		'update_option_page_for_posts',
+		'update_option_sidebars_widgets',
+		'update_option_sem5_options',
+		'update_option_sem6_options',
+		'generate_rewrite_rules',
+		
+		'flush_cache',
+		'after_db_upgrade',
+		) as $hook)
+	add_action($hook, array('nav_menu', 'flush_cache'));
+
+register_activation_hook(__FILE__, array('nav_menu', 'flush_cache'));
+register_deactivation_hook(__FILE__, array('nav_menu', 'flush_cache'));
 ?>
