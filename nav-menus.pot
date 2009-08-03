@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-07-28 22:32+0200\n"
+"POT-Creation-Date: 2009-08-03 18:31+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,72 +24,72 @@ msgstr ""
 msgid "WordPress widgets that let you create navigation menus."
 msgstr ""
 
-#: nav-menus.php:109
+#: nav-menus.php:83
 msgid "Nav Menu Widgets"
 msgstr ""
 
-#: nav-menus.php:159
+#: nav-menus.php:133
 msgid "A navigation menu"
 msgstr ""
 
-#: nav-menus.php:166
+#: nav-menus.php:140
 msgid "Nav Menu"
 msgstr ""
 
-#: nav-menus.php:284 nav-menus.php:785 nav-menus.php:829
+#: nav-menus.php:258 nav-menus.php:759 nav-menus.php:803
 msgid "Home"
 msgstr ""
 
-#: nav-menus.php:320 nav-menus.php:372 nav-menus.php:801 nav-menus.php:843
-#: nav-menus.php:875 nav-menus.php:936
+#: nav-menus.php:294 nav-menus.php:346 nav-menus.php:775 nav-menus.php:817
+#: nav-menus.php:849 nav-menus.php:910
 msgid "Untitled"
 msgstr ""
 
-#: nav-menus.php:746
+#: nav-menus.php:720
 msgid "Config"
 msgstr ""
 
-#: nav-menus.php:750
+#: nav-menus.php:724
 msgid "Title:"
 msgstr ""
 
-#: nav-menus.php:765
+#: nav-menus.php:739
 msgid "Show Descriptions"
 msgstr ""
 
-#: nav-menus.php:768
+#: nav-menus.php:742
 msgid "Menu Items"
 msgstr ""
 
-#: nav-menus.php:771
+#: nav-menus.php:745
 msgid "Drag and drop menu items to rearrange them."
 msgstr ""
 
-#: nav-menus.php:781
+#: nav-menus.php:755
 msgid "- Select a menu item -"
 msgstr ""
 
-#: nav-menus.php:783
+#: nav-menus.php:757
 msgid "Special"
 msgstr ""
 
-#: nav-menus.php:788
+#: nav-menus.php:762
 msgid "Url"
 msgstr ""
 
-#: nav-menus.php:792
+#: nav-menus.php:766
 msgid "Pages"
 msgstr ""
 
-#: nav-menus.php:823 nav-menus.php:970
+#: nav-menus.php:797 nav-menus.php:944
 msgid "Empty Navigation Menu. Leave it empty to populate it automatically."
 msgstr ""
 
-#: nav-menus.php:834
+#: nav-menus.php:808
 msgid "Url Label"
 msgstr ""
 
-#: nav-menus.php:988
+#: nav-menus.php:962
 msgid "Browse"
 msgstr ""
 
