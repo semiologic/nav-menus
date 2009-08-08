@@ -105,7 +105,7 @@ class nav_menu extends WP_Widget {
 	function admin_print_scripts() {
 		$folder = plugin_dir_url(__FILE__) . 'js';
 		wp_enqueue_script('jquery-livequery', $folder . '/jquery.livequery.js', array('jquery'),  '1.1', true);
-		wp_enqueue_script( 'nav-menus', $folder . '/admin.js', array('jquery-ui-sortable', 'jquery-livequery'),  '20090712', true);
+		wp_enqueue_script( 'nav-menus', $folder . '/admin.js', array('jquery-ui-sortable', 'jquery-livequery'),  '20090808', true);
 	} # admin_print_scripts()
 	
 	
