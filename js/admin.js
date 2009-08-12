@@ -1,6 +1,25 @@
+var navMenus = {
+	onLabelChange: function(elt) {
+		var t = jQuery(elt);
+		t.val(jQuery.trim(t.val()));
+		t.closest('div.nav_menu_item').children('.nav_menu_item_preview').children('a')
+		.html(t.val());
+	},
+	
+	onRefChange: function(elt) {
+		var t = jQuery(elt);
+		t.val(jQuery.trim(t.val()));
+		t.closest('div.nav_menu_item').children('.nav_menu_item_preview').children('a')
+		.attr('href', t.val());
+	}
+}
+
+window.navMenus = navMenus;
+
 jQuery(document).ready(function(){
+	
 	jQuery('.nav_menu_item_add').live('click', function() {
-		var select = jQuery(this).parent().children("select");
+		var select = jQuery(this).siblings("select");
 		var handle = select.val();
 		
 		if ( !handle ) {
@@ -8,10 +27,16 @@ jQuery(document).ready(function(){
 			handle = 'home';
 		}
 		
-		var menu = jQuery(this).closest('.nav_menu_items');
+		var menu = jQuery(this).closest('div.nav_menu_items');
 		var items = menu.children('.nav_menu_item_sortables');
-		var item = menu.children('.nav_menu_item_defaults').children('.nav_menu_item-' + handle).clone();
-		item.find(':disabled').removeAttr('disabled');
+		var base = menu.children('.nav_menu_base').val();
+		var item = jQuery('#nav_menu_item_defaults').children('.nav_menu_item-' + handle).clone();
+		
+		item.find('input').each(function() {
+			var name = jQuery(this).attr('name');
+			if ( name )
+				jQuery(this).attr('name', base + name);
+		});
 		
 		if ( !items.children('.nav_menu_item').size() ) {
 			items.empty();
@@ -35,11 +60,11 @@ jQuery(document).ready(function(){
 	});
 	
 	jQuery('.nav_menu_item_remove').live('click', function() {
-		var menu = jQuery(this).closest('.nav_menu_items');
+		var menu = jQuery(this).closest('div.nav_menu_items');
 		var items = menu.children('.nav_menu_item_sortables');
-		var item = jQuery(this).closest('.nav_menu_item');
-		var blank = menu.children('.nav_menu_item_defaults').children('.nav_menu_item_blank').clone();
-
+		var item = jQuery(this).closest('div.nav_menu_item');
+		var blank = jQuery('#nav_menu_item_defaults').children('.nav_menu_item_blank').clone();
+		
 		if ( items.children('.nav_menu_item').size() > 1 ) {
 			item.remove();
 			items.sortable('refresh');
@@ -50,15 +75,5 @@ jQuery(document).ready(function(){
 		}
 	});
 	
-	jQuery('.nav_menu_item_sortables:has(.nav_menu_item)').sortable({});
-	
-	jQuery('.nav_menu_item_label', this).livequery('change', function() {
-		this.value = jQuery.trim(this.value);
-		jQuery(this).parent().siblings('.nav_menu_item_preview').children("a").html(this.value);
-	});
-
-	jQuery('.nav_menu_item_ref', this).livequery('change', function() {
-		this.value = jQuery.trim(this.value);
-		jQuery(this).parent().siblings('.nav_menu_item_preview').children('a').attr('href', this.value);
-	});
+	jQuery('div.nav_menu_item_sortables:has(.nav_menu_item)').sortable({});
 });
