@@ -556,7 +556,7 @@ class nav_menu extends WP_Widget {
 		}
 		
 		foreach ( $all_ancestors as $child_id => $parent_ids ) {
-			while ( $parent_ids[0] )
+			while ( $parent_ids[0] && is_array($all_ancestors[$parent_ids[0]]) )
 				$parent_ids = array_merge($all_ancestors[$parent_ids[0]], $parent_ids);
 			wp_cache_set($child_id, $parent_ids, 'page_ancestors');
 		}
