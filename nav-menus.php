@@ -877,6 +877,12 @@ class nav_menu extends WP_Widget {
 			echo '<div class="nav_menu_item_blank">' . "\n"
 				. '<p>' . __('Empty Navigation Menu. Leave it empty to populate it automatically.', 'nav-menus') . '</p>' . "\n"
 				. '</div>' . "\n";
+		} elseif ( defined('DOING_AJAX') ) {
+			echo <<<EOS
+<script type="text/javascript">
+jQuery('div.nav_menu_item_sortables:has(.nav_menu_item)').sortable({});
+</script>
+EOS;
 		}
 		
 		echo '</div>' . "\n"; # sortables
