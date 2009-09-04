@@ -104,7 +104,7 @@ class nav_menu extends WP_Widget {
 
 	function admin_print_scripts() {
 		$folder = plugin_dir_url(__FILE__) . 'js';
-		wp_enqueue_script('nav-menus', $folder . '/admin.js', array('jquery-ui-sortable'),  '20090812', true);
+		wp_enqueue_script('nav-menus', $folder . '/admin.js', array('jquery-ui-sortable'),  '20090903', true);
 		
 		add_action('admin_footer', array('nav_menu', 'admin_footer'));
 	} # admin_print_scripts()
@@ -118,7 +118,7 @@ class nav_menu extends WP_Widget {
 
 	function admin_print_styles() {
 		$folder = plugin_dir_url(__FILE__) . 'css';
-		wp_enqueue_style('nav-menus', $folder . '/admin.css', null, '20090422');
+		wp_enqueue_style('nav-menus', $folder . '/admin.css', null, '20090903');
 	} # admin_print_styles()
 	
 	
