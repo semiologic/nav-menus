@@ -300,7 +300,7 @@ class nav_menu extends WP_Widget {
 		if ( !$url || $url == 'http://' )
 			return;
 		
-		if ( rtrim($url, '/') == rtrim(get_option('home')) )
+		if ( rtrim($url, '/') == rtrim(get_option('home'), '/') )
 			return nav_menu::display_home($item);
 		
 		if ( !nav_menu::is_local_url($url) ) {
