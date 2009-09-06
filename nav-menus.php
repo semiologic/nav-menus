@@ -359,7 +359,7 @@ class nav_menu extends WP_Widget {
 		if ( (string) $label === '' )
 			$label = __('Untitled', 'nav-menus');
 		
-		$url = esc_url(get_permalink($page->ID));
+		$url = esc_url(apply_filters('the_permalink', get_permalink($page->ID)));
 		
 		$ancestors = $page_id ? wp_cache_get($page_id, 'page_ancestors') : array();
 		$children = wp_cache_get($page->ID, 'page_children');
