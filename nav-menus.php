@@ -642,7 +642,7 @@ class nav_menu extends WP_Widget {
 			$link_elts = explode('.', $link_domain);
 			
 			while ( ( $site_elt = array_pop($site_elts) ) && ( $link_elt = array_pop($link_elts) ) ) {
-				if ( $site_elt !== $link_elt )
+				if ( strtolower($site_elt) !== strtolower($link_elt) )
 					return false;
 			}
 			
