@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.0\n"
 "Report-Msgid-Bugs-To: https://tickets.semiologic.com\n"
-"POT-Creation-Date: 2009-08-03 18:31+0200\n"
+"POT-Creation-Date: 2009-10-01 16:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,68 +28,68 @@ msgstr ""
 msgid "Nav Menu Widgets"
 msgstr ""
 
-#: nav-menus.php:133
+#: nav-menus.php:134
 msgid "A navigation menu"
 msgstr ""
 
-#: nav-menus.php:140
+#: nav-menus.php:141
 msgid "Nav Menu"
 msgstr ""
 
-#: nav-menus.php:258 nav-menus.php:759 nav-menus.php:803
+#: nav-menus.php:262 nav-menus.php:778 nav-menus.php:932
 msgid "Home"
 msgstr ""
 
-#: nav-menus.php:294 nav-menus.php:346 nav-menus.php:775 nav-menus.php:817
-#: nav-menus.php:849 nav-menus.php:910
+#: nav-menus.php:298 nav-menus.php:360 nav-menus.php:794 nav-menus.php:843
+#: nav-menus.php:946 nav-menus.php:978
 msgid "Untitled"
 msgstr ""
 
-#: nav-menus.php:720
+#: nav-menus.php:735
 msgid "Config"
 msgstr ""
 
-#: nav-menus.php:724
+#: nav-menus.php:739
 msgid "Title:"
 msgstr ""
 
-#: nav-menus.php:739
+#: nav-menus.php:755
 msgid "Show Descriptions"
 msgstr ""
 
-#: nav-menus.php:742
+#: nav-menus.php:761
 msgid "Menu Items"
 msgstr ""
 
-#: nav-menus.php:745
-msgid "Drag and drop menu items to rearrange them."
-msgstr ""
-
-#: nav-menus.php:755
+#: nav-menus.php:774
 msgid "- Select a menu item -"
 msgstr ""
 
-#: nav-menus.php:757
+#: nav-menus.php:776
 msgid "Special"
 msgstr ""
 
-#: nav-menus.php:762
+#: nav-menus.php:781
 msgid "Url"
 msgstr ""
 
-#: nav-menus.php:766
+#: nav-menus.php:785
 msgid "Pages"
 msgstr ""
 
-#: nav-menus.php:797 nav-menus.php:944
+#: nav-menus.php:812
+msgid "Drag and drop menu items to rearrange them."
+msgstr ""
+
+#: nav-menus.php:878 nav-menus.php:926
 msgid "Empty Navigation Menu. Leave it empty to populate it automatically."
 msgstr ""
 
-#: nav-menus.php:808
+#: nav-menus.php:937
 msgid "Url Label"
 msgstr ""
 
-#: nav-menus.php:962
+#: nav-menus.php:1025
 msgid "Browse"
 msgstr ""
 
