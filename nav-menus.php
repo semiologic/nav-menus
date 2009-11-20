@@ -866,7 +866,7 @@ class nav_menu extends WP_Widget {
 				. '</div>' . "\n" # data
 				. '<div class="nav_menu_item_preview">' . "\n"
 				. '&rarr;&nbsp;<a href="' . esc_url($url) . '"'
-					. ' onclick="window.open(this.href); return false;">'
+					. ' target="_blank">'
 					. $label
 					. '</a>'
 				. '</div>' . "\n" # preview
@@ -1003,7 +1003,7 @@ EOS;
 				. '</div>' . "\n" # data
 				. '<div class="nav_menu_item_preview">' . "\n"
 				. '&rarr;&nbsp;<a href="' . esc_url($url) . '"'
-					. ' onclick="window.open(this.href); return false;">'
+					. ' target="_blank">'
 					. $label
 					. '</a>'
 				. '</div>' . "\n" # preview
