@@ -27,6 +27,11 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.0.2 =
+
+- Sem Cache 2.0 related tweaks
+- Fix blog link on search/404 pages
+
 = 2.0.1 =
 
 - Improved local url identification
