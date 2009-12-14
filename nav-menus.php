@@ -1098,15 +1098,16 @@ EOS;
 		if ( !$post || $post->post_type != 'page' || wp_is_post_revision($post_id) )
 			return;
 		
-		if ( wp_cache_get($post_id, 'pre_flush_post') === false )
+		$old = wp_cache_get($post_id, 'pre_flush_post');
+		if ( $old === false )
 			$old = array();
 		
 		$update = false;
 		foreach ( array(
 			'post_title',
 			'post_status',
-			) as $field => $value ) {
-			if ( !isset($o[$field]) ) {
+			) as $field ) {
+			if ( !isset($old[$field]) ) {
 				$old[$field] = $post->$field;
 				$update = true;
 			}
@@ -1126,6 +1127,7 @@ EOS;
 				$update = true;
 			}
 		}
+		
 		
 		if ( $update )
 			wp_cache_set($post_id, $old, 'pre_flush_post');
