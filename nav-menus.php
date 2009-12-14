@@ -1144,12 +1144,12 @@ EOS;
 		if ( !$post_id )
 			return;
 		
+		# prevent mass-flushing when rewrite rules have not changed
+		remove_action('generate_rewrite_rules', array('nav_menu', 'flush_cache'));
+		
 		$post = get_post($post_id);
 		if ( !$post || $post->post_type != 'page' || wp_is_post_revision($post_id) )
 			return;
-		
-		# prevent mass-flushing when rewrite rules have not changed
-		remove_action('generate_rewrite_rules', array('nav_menu', 'flush_cache'));
 		
 		$old = wp_cache_get($post_id, 'pre_flush_post');
 		
