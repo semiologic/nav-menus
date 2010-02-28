@@ -30,6 +30,7 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 = 2.0.3 =
 
 - Further cache improvements (fix priority)
+- Fix a potential infinite loop
 
 = 2.0.2 =
 
