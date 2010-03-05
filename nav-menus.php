@@ -265,7 +265,7 @@ class nav_menu extends WP_Widget {
 		}
 		
 		extract($item, EXTR_SKIP);
-		if ( (string) $label === '' )
+		if ( !isset($label) || (string) $label === '' )
 			$label = __('Home', 'nav-menus');
 		$url = esc_url(user_trailingslashit(get_option('home')));
 		
@@ -301,7 +301,7 @@ class nav_menu extends WP_Widget {
 
 	function display_url($item) {
 		extract($item, EXTR_SKIP);
-		if ( (string) $label === '' )
+		if ( !isset($label) || (string) $label === '' )
 			$label = __('Untitled', 'nav-menus');
 		$url = esc_url($ref);
 		if ( !$url || $url == 'http://' )
@@ -359,7 +359,7 @@ class nav_menu extends WP_Widget {
 			$page_id = 0;
 		}
 		
-		if ( (string) $label === '' )
+		if ( !isset($label) || (string) $label === '' )
 			$label = get_post_meta($page->ID, '_widgets_label', true);
 		if ( (string) $label === '' )
 			$label = $page->post_title;
