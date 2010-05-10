@@ -29,7 +29,7 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 = 2.0.4 =
 
-- 3.0 compat
+- WP 3.0 compat
 
 = 2.0.3 =
 
