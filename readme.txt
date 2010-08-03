@@ -27,6 +27,10 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.0.5 =
+
+- Disable the Custom Menu widget from WP 3.0, to avoid conflicts
+
 = 2.0.4 =
 
 - WP 3.0 compat
