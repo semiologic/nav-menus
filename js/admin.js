@@ -52,7 +52,7 @@ jQuery(document).ready(function(){
 			if ( typeof handle != 'undefined' )
 				select.val(handle);
 		} else if ( handle.match(/^page-\d+/)) {
-			handle = select.children().children('option[value=' + handle + '] + :first').val();
+			handle = select.children().children('option[value="' + handle + '"] + :first').val();
 			if ( typeof handle == 'undefined')
 				handle = 'url';
 			select.val(handle);
