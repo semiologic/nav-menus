@@ -3,8 +3,8 @@
 Plugin Name: Nav Menus
 Plugin URI: http://www.semiologic.com/software/nav-menus/
 Description: WordPress widgets that let you create navigation menus.
-Version: 2.0.6
-Author: Denis de Bernardy
+Version: 2.1
+Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: nav-menus
 Domain Path: /lang
@@ -35,6 +35,7 @@ if ( !defined('sem_widget_cache_debug') )
 /**
  * nav_menu
  *
+ * @property int|string alt_option_name
  * @package Nav Menus
  **/
 
@@ -235,7 +236,9 @@ class nav_menu extends WP_Widget {
 		echo '</ul>' . "\n";
 		
 		echo $after_widget;
-		
+
+        global $_wp_using_ext_object_cache;
+
 		$o = ob_get_clean();
 		
 		if ( !is_preview() ) {
@@ -266,7 +269,8 @@ class nav_menu extends WP_Widget {
 		if ( get_option('show_on_front') == 'page' && get_option('page_on_front') ) {
 			$item['type'] = 'page';
 			$item['ref'] = get_option('page_on_front');
-			return nav_menu::display_page($item, $desc);
+            nav_menu::display_page($item, $desc);
+            return;
 		}
 		
 		extract($item, EXTR_SKIP);
@@ -312,8 +316,10 @@ class nav_menu extends WP_Widget {
 		if ( !$url || $url == 'http://' )
 			return;
 		
-		if ( rtrim($url, '/') == rtrim(get_option('home'), '/') )
-			return nav_menu::display_home($item);
+		if ( rtrim($url, '/') == rtrim(get_option('home'), '/') ) {
+			nav_menu::display_home($item);
+            return;
+        }
 		
 		if ( !nav_menu::is_local_url($url) ) {
 			$classes = array('nav_url');
@@ -350,7 +356,7 @@ class nav_menu extends WP_Widget {
 	function display_page($item, $desc = false) {
 		extract($item, EXTR_SKIP);
 		$ref = (int) $ref;
-		$page = get_page($ref);
+		$page = get_post($ref);
 		
 		if ( !$page || $page->post_parent != 0 && get_post_meta($page->ID, '_widgets_exclude', true) )
 			return;
@@ -449,7 +455,7 @@ class nav_menu extends WP_Widget {
 		if ( is_page() ) {
 			global $wp_the_query;
 			$page_id = (int) $wp_the_query->get_queried_object_id();
-			$page = get_page($page_id);
+			$page = get_post($page_id);
 		} else {
 			$page_id = 0;
 			$page = null;
@@ -457,9 +463,9 @@ class nav_menu extends WP_Widget {
 		
 		if ( get_option('show_on_front') == 'page' ) {
 			$front_page_id = (int) get_option('page_on_front');
-			$front_page = get_page($front_page_id);
+			$front_page = get_post($front_page_id);
 			$blog_page_id = (int) get_option('page_for_posts');
-			$blog_page = $blog_page_id ? get_page($blog_page_id) : null;
+			$blog_page = $blog_page_id ? get_post($blog_page_id) : null;
 		} else {
 			$front_page_id = 0;
 			$front_page = null;
@@ -472,7 +478,7 @@ class nav_menu extends WP_Widget {
 			$ancestors = array();
 			while ( $page && $page->post_parent != 0 ) {
 				$ancestors[] = (int) $page->post_parent;
-				$page = get_page($page->post_parent);
+				$page = get_post($page->post_parent);
 			}
 			$ancestors = array_reverse($ancestors);
 			wp_cache_set($page_id, $ancestors, 'page_ancestors');
@@ -483,7 +489,7 @@ class nav_menu extends WP_Widget {
 			$front_page_ancestors = array();
 			while ( $front_page && $front_page->post_parent != 0 ) {
 				$front_page_ancestors[] = (int) $front_page->post_parent;
-				$front_page = get_page($front_page->post_parent);
+				$front_page = get_post($front_page->post_parent);
 			}
 			$front_page_ancestors = array_reverse($front_page_ancestors);
 			wp_cache_set($front_page_id, $front_page_ancestors, 'page_ancestors');
@@ -494,7 +500,7 @@ class nav_menu extends WP_Widget {
 			$blog_page_ancestors = array();
 			while ( $blog_page && $blog_page->post_parent != 0 ) {
 				$blog_page_ancestors[] = (int) $blog_page->post_parent;
-				$blog_page = get_page($blog_page->post_parent);
+				$blog_page = get_post($blog_page->post_parent);
 			}
 			$blog_page_ancestors = array_reverse($blog_page_ancestors);
 			wp_cache_set($blog_page_id, $blog_page_ancestors, 'page_ancestors');
@@ -689,38 +695,40 @@ class nav_menu extends WP_Widget {
 		$instance = nav_menu::defaults();
 		$instance['title'] = strip_tags($new_instance['title']);
 		$instance['desc'] = isset($new_instance['desc']);
-		foreach ( array_keys((array) $new_instance['items']['type']) as $key ) {
-			$item = array();
-			$item['type'] = $new_instance['items']['type'][$key];
-			
-			if ( !in_array($item['type'], array('home', 'url', 'page')) ) {
-				continue;
-			}
-			
-			$label = trim(strip_tags(stripslashes($new_instance['items']['label'][$key])));
-			
-			switch ( $item['type'] ) {
-				case 'home':
-					$item['label'] = $label;
-					break;
-				case 'url':
-					$item['ref'] = trim(strip_tags(stripslashes($new_instance['items']['ref'][$key])));
-					$item['label'] = $label;
-					break;
-				case 'page':
-					$item['ref'] = intval($new_instance['items']['ref'][$key]);
-					$page = get_post($item['ref']);
-					if ( $page->post_title != $label ) {
-						update_post_meta($item['ref'], '_widgets_label', $label);
-					} else {
-						delete_post_meta($item['ref'], '_widgets_label');
-					}
-					break;
-			}
-			
-			$instance['items'][] = $item;
-		}
-		
+        if (isset($new_instance['items'])) {
+            foreach ( array_keys((array) $new_instance['items']['type']) as $key ) {
+                $item = array();
+                $item['type'] = $new_instance['items']['type'][$key];
+
+                if ( !in_array($item['type'], array('home', 'url', 'page')) ) {
+                    continue;
+                }
+
+                $label = trim(strip_tags(stripslashes($new_instance['items']['label'][$key])));
+
+                switch ( $item['type'] ) {
+                    case 'home':
+                        $item['label'] = $label;
+                        break;
+                    case 'url':
+                        $item['ref'] = trim(strip_tags(stripslashes($new_instance['items']['ref'][$key])));
+                        $item['label'] = $label;
+                        break;
+                    case 'page':
+                        $item['ref'] = intval($new_instance['items']['ref'][$key]);
+                        $page = get_post($item['ref']);
+                        if ( $page->post_title != $label ) {
+                            update_post_meta($item['ref'], '_widgets_label', $label);
+                        } else {
+                            delete_post_meta($item['ref'], '_widgets_label');
+                        }
+                        break;
+                }
+
+                $instance['items'][] = $item;
+            }
+        }
+
 		nav_menu::flush_cache();
 		
 		return $instance;
@@ -842,7 +850,7 @@ class nav_menu extends WP_Widget {
 		echo '<div class="nav_menu_item_sortables">' . "\n";
 		
 		foreach ( $items as $item ) {
-			$label = $item['label'];
+			$label = isset($item['label']) ? $item['label'] : '';
 			$type = $item['type'];
 			switch ( $type ) {
 			case 'home':
@@ -1145,7 +1153,7 @@ EOS;
 	 * flush_post()
 	 *
 	 * @param int $post_id
-	 * @return void
+	 * @return void|mixed
 	 **/
 
 	function flush_post($post_id) {

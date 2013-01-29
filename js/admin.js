@@ -12,7 +12,7 @@ var navMenus = {
 		t.closest('div.nav_menu_item').children('.nav_menu_item_preview').children('a')
 		.attr('href', t.val());
 	}
-}
+};
 
 window.navMenus = navMenus;
 
