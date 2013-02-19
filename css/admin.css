@@ -12,10 +12,12 @@ input.nav_menu_item_remove {
 }
 
 div.nav_menu_item {
-	width: 304px;
-	padding: 8px;
-	margin: 5px 0px;
+	width: 312px;
+	padding: 0 0px 1px !important;
+	margin: 5px 0px !important;
 	cursor: move !important;
+    height: 60px !important;
+    margin: 5px 0px;
 }
 
 div.nav_menu_item_blank {
@@ -30,8 +32,9 @@ div.nav_menu_item_blank:hover {
 }
 
 div.nav_menu_item_data {
-	padding-left: 0px;
+	padding-left: 5px;
 	margin-left: 0px;
+    margin-top: 5px;
 }
 
 input.nav_menu_item_label,
@@ -41,4 +44,5 @@ input.nav_menu_item_ref {
 
 div.nav_menu_item_preview {
 	padding-top: 5px;
+    padding-left: 5px;
 }
