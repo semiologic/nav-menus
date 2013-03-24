@@ -27,6 +27,10 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.1.2 =
+
+- Fix caching issue with "This Page in Widgets" not refreshing on title or description updates
+
 = 2.1.1 =
 
 - Fix menu item display broken by JQuery update since WP 3.3
