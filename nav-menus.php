@@ -3,7 +3,7 @@
 Plugin Name: Nav Menus
 Plugin URI: http://www.semiologic.com/software/nav-menus/
 Description: WordPress widgets that let you create navigation menus.
-Version: 2.1.3
+Version: 2.2
 Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: nav-menus
@@ -40,6 +40,70 @@ if ( !defined('sem_widget_cache_debug') )
  **/
 
 class nav_menu extends WP_Widget {
+
+    /**
+   	 * nav_menu()
+   	 *
+   	 * @return void
+   	 **/
+
+   	function nav_menu() {
+        add_action('widgets_init', array($this, 'widgets_init'));
+        add_action('admin_print_scripts-widgets.php', array($this, 'admin_print_scripts'));
+        add_action('admin_print_styles-widgets.php', array($this, 'admin_print_styles'));
+
+        foreach ( array('page.php', 'page-new.php') as $hook )
+        	add_action('load-' . $hook, array($this, 'editor_init'));
+
+        if ( function_exists('is_super_admin') && is_admin() ) {
+        	foreach ( array('post.php', 'post-new.php') as $hook )
+        		add_action('load-' . $hook, array($this, 'editor_init'));
+        }
+
+        foreach ( array(
+        		'switch_theme',
+        		'update_option_active_plugins',
+        		'update_option_show_on_front',
+        		'update_option_page_on_front',
+        		'update_option_page_for_posts',
+        		'update_option_sidebars_widgets',
+        		'update_option_sem5_options',
+        		'update_option_sem6_options',
+        		'generate_rewrite_rules',
+                'clean_post_cache',
+                'clean_page_cache',
+        		'flush_cache',
+        		'after_db_upgrade',
+        		) as $hook )
+        	add_action($hook, array($this, 'flush_cache'));
+
+        add_action('pre_post_update', array($this, 'pre_flush_post'));
+
+        foreach ( array(
+        		'save_post',
+        		'delete_post',
+        		) as $hook )
+        	add_action($hook, array($this, 'flush_post'), 1); // before _save_post_hook()
+
+        register_activation_hook(__FILE__, array($this, 'flush_cache'));
+        register_deactivation_hook(__FILE__, array($this, 'flush_cache'));
+
+        wp_cache_add_non_persistent_groups(array('nav_menu_roots', 'page_ancestors', 'page_children'));
+        wp_cache_add_non_persistent_groups(array('widget_queries', 'pre_flush_post'));
+
+   		$widget_ops = array(
+   			'classname' => 'nav_menu',
+   			'description' => __('A navigation menu', 'nav-menus'),
+   			);
+   		$control_ops = array(
+   			'width' => 330,
+   			);
+
+   		$this->init();
+   		$this->WP_Widget('nav_menu', __('Nav Menu', 'nav-menus'), $widget_ops, $control_ops);
+   	} # nav_menu()
+
+
 	/**
 	 * init()
 	 *
@@ -72,7 +136,7 @@ class nav_menu extends WP_Widget {
 		if ( !class_exists('widget_utils') )
 			include dirname(__FILE__) . '/widget-utils/widget-utils.php';
 		widget_utils::page_meta_boxes();
-		add_action('page_widget_config_affected', array('nav_menu', 'widget_config_affected'));
+		add_action('page_widget_config_affected', array($this, 'widget_config_affected'));
 	} # editor_init()
 	
 	
@@ -112,7 +176,7 @@ class nav_menu extends WP_Widget {
 		$folder = plugin_dir_url(__FILE__) . 'js';
 		wp_enqueue_script('nav-menus', $folder . '/admin.js', array('jquery-ui-sortable'),  '20090903', true);
 		
-		add_action('admin_footer', array('nav_menu', 'admin_footer'));
+		add_action('admin_footer', array($this, 'admin_footer'));
 	} # admin_print_scripts()
 	
 	
@@ -126,28 +190,8 @@ class nav_menu extends WP_Widget {
 		$folder = plugin_dir_url(__FILE__) . 'css';
 		wp_enqueue_style('nav-menus', $folder . '/admin.css', null, '20090903');
 	} # admin_print_styles()
-	
-	
-	/**
-	 * nav_menu()
-	 *
-	 * @return void
-	 **/
 
-	function nav_menu() {
-		$widget_ops = array(
-			'classname' => 'nav_menu',
-			'description' => __('A navigation menu', 'nav-menus'),
-			);
-		$control_ops = array(
-			'width' => 330,
-			);
-		
-		$this->init();
-		$this->WP_Widget('nav_menu', __('Nav Menu', 'nav-menus'), $widget_ops, $control_ops);
-	} # nav_menu()
-	
-	
+
 	/**
 	 * widget()
 	 *
@@ -626,7 +670,14 @@ class nav_menu extends WP_Widget {
 		if ( !isset($site_domain) ) {
 			$site_domain = get_option('home');
 			$site_domain = parse_url($site_domain);
-			$site_domain = $site_domain['host'];
+            if ($site_domain == false)
+                return false;
+            elseif (is_array($site_domain)) {
+                if (isset($site_domain['host']))
+                    $site_domain = $site_domain['host'];
+                else
+                    return false;
+            }
 			$site_domain = preg_replace("/^www\./i", '', $site_domain);
 			
 			# The following is not bullet proof, but it's good enough for a WP site
@@ -662,7 +713,14 @@ class nav_menu extends WP_Widget {
 			return false;
 		
 		$link_domain = parse_url($url);
-		$link_domain = $link_domain['host'];
+        if ($link_domain == false)
+            return false;
+        elseif (is_array($link_domain)) {
+            if (isset($link_domain['host']))
+		        $link_domain = $link_domain['host'];
+            else
+                return false;
+        }
 		$link_domain = preg_replace("/^www\./i", '', $link_domain);
 		$link_domain = strtolower($link_domain);
 		
@@ -1163,7 +1221,7 @@ EOS;
 			return;
 		
 		# prevent mass-flushing when the permalink structure hasn't changed
-		remove_action('generate_rewrite_rules', array('nav_menu', 'flush_cache'));
+		remove_action('generate_rewrite_rules', array($this, 'flush_cache'));
 		
 		$post = get_post($post_id);
 		if ( !$post || $post->post_type != 'page' || wp_is_post_revision($post_id) )
@@ -1365,46 +1423,5 @@ EOS;
 	} # upgrade_1x()
 } # nav_menu
 
-add_action('widgets_init', array('nav_menu', 'widgets_init'));
-add_action('admin_print_scripts-widgets.php', array('nav_menu', 'admin_print_scripts'));
-add_action('admin_print_styles-widgets.php', array('nav_menu', 'admin_print_styles'));
-
-foreach ( array('page.php', 'page-new.php') as $hook )
-	add_action('load-' . $hook, array('nav_menu', 'editor_init'));
-
-if ( function_exists('is_super_admin') && is_admin() ) {
-	foreach ( array('post.php', 'post-new.php') as $hook )
-		add_action('load-' . $hook, array('nav_menu', 'editor_init'));
-}
-
-foreach ( array(
-		'switch_theme',
-		'update_option_active_plugins',
-		'update_option_show_on_front',
-		'update_option_page_on_front',
-		'update_option_page_for_posts',
-		'update_option_sidebars_widgets',
-		'update_option_sem5_options',
-		'update_option_sem6_options',
-		'generate_rewrite_rules',
-        'clean_post_cache',
-        'clean_page_cache',
-		'flush_cache',
-		'after_db_upgrade',
-		) as $hook )
-	add_action($hook, array('nav_menu', 'flush_cache'));
-
-add_action('pre_post_update', array('nav_menu', 'pre_flush_post'));
-
-foreach ( array(
-		'save_post',
-		'delete_post',
-		) as $hook )
-	add_action($hook, array('nav_menu', 'flush_post'), 1); // before _save_post_hook()
-
-register_activation_hook(__FILE__, array('nav_menu', 'flush_cache'));
-register_deactivation_hook(__FILE__, array('nav_menu', 'flush_cache'));
-
-wp_cache_add_non_persistent_groups(array('nav_menu_roots', 'page_ancestors', 'page_children'));
-wp_cache_add_non_persistent_groups(array('widget_queries', 'pre_flush_post'));
+$nav_menu = new nav_menu();
 ?>
