@@ -3,7 +3,7 @@ Contributors: Denis-de-Bernardy & Mike_Koepke
 Donate link: http://www.semiologic.com/partners/
 Tags: semiologic
 Requires at least: 3.1
-Tested up to: 3.6
+Tested up to: 3.8
 Stable tag: trunk
 
 Lets you manage navigation menus on your site.
@@ -26,6 +26,11 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 
 == Change Log ==
+
+= 2.2.1 =
+
+- A few CSS tweaks for new WP 3.8 admin design
+- WP 3.8 compat
 
 = 2.2 =
 

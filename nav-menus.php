@@ -3,20 +3,19 @@
 Plugin Name: Nav Menus
 Plugin URI: http://www.semiologic.com/software/nav-menus/
 Description: WordPress widgets that let you create navigation menus.
-Version: 2.2
+Version: 2.2.1
 Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: nav-menus
 Domain Path: /lang
+License: Dual licensed under the MIT and GPLv2 licenses
 */
 
 /*
 Terms of use
 ------------
 
-This software is copyright Mesoconcepts (http://www.mesoconcepts.com), and is distributed under the terms of the Mesoconcepts license. In a nutshell, you may freely use it for any purpose, but may not redistribute it without written permission.
-
-http://www.mesoconcepts.com/license/
+This software is copyright Denis de Bernardy & Mike Koepke, and is distributed under the terms of the MIT and GPLv2 licenses.
 **/
 
 # Don't even load this if we're using WP 3.0 or later
@@ -47,10 +46,10 @@ class nav_menu extends WP_Widget {
    	 * @return void
    	 **/
 
-   	function nav_menu() {
+	public function __construct() {
         add_action('widgets_init', array($this, 'widgets_init'));
-        add_action('admin_print_scripts-widgets.php', array($this, 'admin_print_scripts'));
-        add_action('admin_print_styles-widgets.php', array($this, 'admin_print_styles'));
+        add_action('admin_enqueue_scripts', array($this, 'admin_print_scripts'));
+        add_action('admin_enqueue_scripts', array($this, 'admin_print_styles'));
 
         foreach ( array('page.php', 'page-new.php') as $hook )
         	add_action('load-' . $hook, array($this, 'editor_init'));
@@ -188,7 +187,7 @@ class nav_menu extends WP_Widget {
 
 	function admin_print_styles() {
 		$folder = plugin_dir_url(__FILE__) . 'css';
-		wp_enqueue_style('nav-menus', $folder . '/admin.css', null, '20090903');
+		wp_enqueue_style('nav-menus', $folder . '/admin.css', null, '20140107');
 	} # admin_print_styles()
 
 
@@ -1424,4 +1423,3 @@ EOS;
 } # nav_menu
 
 $nav_menu = new nav_menu();
-?>
