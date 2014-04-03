@@ -3,7 +3,7 @@
 Plugin Name: Nav Menus
 Plugin URI: http://www.semiologic.com/software/nav-menus/
 Description: WordPress widgets that let you create navigation menus.
-Version: 2.2.1
+Version: 2.3 dev
 Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: nav-menus
@@ -22,7 +22,6 @@ This software is copyright Denis de Bernardy & Mike Koepke, and is distributed u
 #if ( !class_exists('WP_Nav_Menu_Widget') )
 #	return;
 
-load_plugin_textdomain('nav-menus', false, dirname(plugin_basename(__FILE__)) . '/lang');
 
 if ( !defined('widget_utils_textdomain') )
 	define('widget_utils_textdomain', 'nav-menus');
@@ -40,55 +39,74 @@ if ( !defined('sem_widget_cache_debug') )
 
 class nav_menu extends WP_Widget {
 
-    /**
-   	 * nav_menu()
-   	 *
-   	 * @return void
-   	 **/
+	/**
+	 * Plugin instance.
+	 *
+	 * @see get_instance()
+	 * @type object
+	 */
+	protected static $instance = NULL;
+
+	/**
+	 * URL to this plugin's directory.
+	 *
+	 * @type string
+	 */
+	public $plugin_url = '';
+
+	/**
+	 * Path to this plugin's directory.
+	 *
+	 * @type string
+	 */
+	public $plugin_path = '';
+
+	/**
+	 * Access this plugin’s working instance
+	 *
+	 * @wp-hook plugins_loaded
+	 * @return  object of this class
+	 */
+	public static function get_instance()
+	{
+		NULL === self::$instance and self::$instance = new self;
+
+		return self::$instance;
+	}
+
+	/**
+	 * Loads translation file.
+	 *
+	 * Accessible to other classes to load different language files (admin and
+	 * front-end for example).
+	 *
+	 * @wp-hook init
+	 * @param   string $domain
+	 * @return  void
+	 */
+	public function load_language( $domain )
+	{
+		load_plugin_textdomain(
+			$domain,
+			FALSE,
+			$this->plugin_path . 'lang'
+		);
+	}
+
+
+	/**
+	 * Constructor.
+	 *
+	 *
+	 */
 
 	public function __construct() {
-        add_action('widgets_init', array($this, 'widgets_init'));
-        add_action('admin_enqueue_scripts', array($this, 'admin_print_scripts'));
-        add_action('admin_enqueue_scripts', array($this, 'admin_print_styles'));
 
-        foreach ( array('page.php', 'page-new.php') as $hook )
-        	add_action('load-' . $hook, array($this, 'editor_init'));
+		$this->plugin_url    = plugins_url( '/', __FILE__ );
+		$this->plugin_path   = plugin_dir_path( __FILE__ );
+		$this->load_language( 'nav-menus' );
 
-        if ( function_exists('is_super_admin') && is_admin() ) {
-        	foreach ( array('post.php', 'post-new.php') as $hook )
-        		add_action('load-' . $hook, array($this, 'editor_init'));
-        }
-
-        foreach ( array(
-        		'switch_theme',
-        		'update_option_active_plugins',
-        		'update_option_show_on_front',
-        		'update_option_page_on_front',
-        		'update_option_page_for_posts',
-        		'update_option_sidebars_widgets',
-        		'update_option_sem5_options',
-        		'update_option_sem6_options',
-        		'generate_rewrite_rules',
-                'clean_post_cache',
-                'clean_page_cache',
-        		'flush_cache',
-        		'after_db_upgrade',
-        		) as $hook )
-        	add_action($hook, array($this, 'flush_cache'));
-
-        add_action('pre_post_update', array($this, 'pre_flush_post'));
-
-        foreach ( array(
-        		'save_post',
-        		'delete_post',
-        		) as $hook )
-        	add_action($hook, array($this, 'flush_post'), 1); // before _save_post_hook()
-
-        register_activation_hook(__FILE__, array($this, 'flush_cache'));
-        register_deactivation_hook(__FILE__, array($this, 'flush_cache'));
-
-        wp_cache_add_non_persistent_groups(array('nav_menu_roots', 'page_ancestors', 'page_children'));
-        wp_cache_add_non_persistent_groups(array('widget_queries', 'pre_flush_post'));
+		add_action( 'plugins_loaded', array ( $this, 'init' ) );
 
    		$widget_ops = array(
    			'classname' => 'nav_menu',
@@ -98,7 +116,6 @@ class nav_menu extends WP_Widget {
    			'width' => 330,
    			);
 
-   		$this->init();
    		$this->WP_Widget('nav_menu', __('Nav Menu', 'nav-menus'), $widget_ops, $control_ops);
    	} # nav_menu()
 
@@ -122,9 +139,49 @@ class nav_menu extends WP_Widget {
 				}
 			}
 		}
+
+		add_action('widgets_init', array($this, 'widgets_init'));
+
+		foreach ( array(
+		    'switch_theme',
+		    'update_option_active_plugins',
+		    'update_option_show_on_front',
+		    'update_option_page_on_front',
+		    'update_option_page_for_posts',
+		    'update_option_sidebars_widgets',
+		    'update_option_sem5_options',
+		    'update_option_sem6_options',
+		    'generate_rewrite_rules',
+		      'clean_post_cache',
+		      'clean_page_cache',
+		    'flush_cache',
+		    'after_db_upgrade',
+		    ) as $hook )
+			add_action($hook, array($this, 'flush_cache'));
+
+		if ( is_admin() ) {
+			add_action('admin_enqueue_scripts', array($this, 'admin_print_scripts'));
+			add_action('admin_enqueue_scripts', array($this, 'admin_print_styles'));
+
+			foreach ( array('post.php', 'post-new.php', 'page.php', 'page-new.php') as $hook )
+			    add_action('load-' . $hook, array($this, 'editor_init'));
+
+			add_action('pre_post_update', array($this, 'pre_flush_post'));
+
+			foreach ( array(
+			    'save_post',
+			    'delete_post',
+			    ) as $hook )
+			add_action($hook, array($this, 'flush_post'), 1); // before _save_post_hook()
+		}
+
+		register_activation_hook(__FILE__, array($this, 'flush_cache'));
+		register_deactivation_hook(__FILE__, array($this, 'flush_cache'));
+
+		wp_cache_add_non_persistent_groups(array('nav_menu_roots', 'page_ancestors', 'page_children'));
+		wp_cache_add_non_persistent_groups(array('widget_queries', 'pre_flush_post'));
 	} # init()
-	
-	
+
 	/**
 	 * editor_init()
 	 *
@@ -133,7 +190,8 @@ class nav_menu extends WP_Widget {
 
 	function editor_init() {
 		if ( !class_exists('widget_utils') )
-			include dirname(__FILE__) . '/widget-utils/widget-utils.php';
+			include $this->plugin_path . '/widget-utils/widget-utils.php';
+
 		widget_utils::page_meta_boxes();
 		add_action('page_widget_config_affected', array($this, 'widget_config_affected'));
 	} # editor_init()
@@ -259,7 +317,7 @@ class nav_menu extends WP_Widget {
 		if ( $title )
 			echo $before_title . $title . $after_title;
 		
-		echo '<ul>' . "\n";
+		echo '<ul class="nav_menu">' . "\n";
 		
 		foreach ( $items as $item ) {
 			switch ( $item['type'] ) {
@@ -401,7 +459,7 @@ class nav_menu extends WP_Widget {
 		$ref = (int) $ref;
 		$page = get_post($ref);
 		
-		if ( !$page || $page->post_parent != 0 && get_post_meta($page->ID, '_widgets_exclude', true) )
+		if ( !$page || $page->post_parent != 0 || (int) get_post_meta($page->ID, '_widgets_exclude', true) )
 			return;
 		
 		if ( is_page() ) {
@@ -472,7 +530,7 @@ class nav_menu extends WP_Widget {
 		
 		if ( $children && ( $page->ID == $page_id || in_array($page->ID, $ancestors) ) ) {
 			echo "\n"
-				. '<ul>' . "\n";
+				. '<ul class="sub-menu">' . "\n";
 			foreach ( $children as $child_id ) {
 				$item = array(
 					'type' => 'page',
@@ -1422,4 +1480,4 @@ EOS;
 	} # upgrade_1x()
 } # nav_menu
 
-$nav_menu = new nav_menu();
+$nav_menu = nav_menu::get_instance();

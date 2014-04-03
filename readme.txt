@@ -27,6 +27,13 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.3 =
+
+- Code refactoring
+- Add additional css classes for customization
+- The exclusion for pages in menu widget is now fixed.
+
+
 = 2.2.1 =
 
 - A few CSS tweaks for new WP 3.8 admin design
