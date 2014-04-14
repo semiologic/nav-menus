@@ -93,7 +93,6 @@ class nav_menu extends WP_Widget {
 		);
 	}
 
-
 	/**
 	 * Constructor.
 	 *
@@ -459,7 +458,8 @@ class nav_menu extends WP_Widget {
 		$ref = (int) $ref;
 		$page = get_post($ref);
 		
-		if ( !$page || $page->post_parent != 0 || (int) get_post_meta($page->ID, '_widgets_exclude', true) )
+		if ( !$page || $page->post_parent != 0 || (int) get_post_meta($page->ID, '_widgets_exclude', true)
+			|| (int) get_post_meta($page->ID, '_menu_exclude', true))
 			return;
 		
 		if ( is_page() ) {
@@ -937,6 +937,8 @@ class nav_menu extends WP_Widget {
 			;
 		
 		foreach ( $pages as $page ) {
+			if ( (int) get_post_meta($page->ID, '_menu_exclude', true) )
+				continue;
 			$label = get_post_meta($page->ID, '_widgets_label', true);
 			if ( $label === '' )
 				$label = $page->post_title;
@@ -1202,6 +1204,8 @@ EOS;
 				continue;
 			if ( get_post_meta($root_id, '_widgets_exclude', true) )
 				continue;
+			if ( get_post_meta($root_id, '_menu_exclude', true) )
+				continue;
 			
 			$items[] = array(
 				'type' => 'page',
@@ -1250,15 +1254,16 @@ EOS;
 		}
 		
 		foreach ( array(
-			'widgets_label', 'widgets_desc',
+			'widgets_label',
+			'widgets_desc',
 			'widgets_exclude',
+			'menu_exclude'
 			) as $key ) {
 			if ( !isset($old[$key]) ) {
 				$old[$key] = get_post_meta($post_id, "_$key", true);
 				$update = true;
 			}
 		}
-		
 		
 		if ( $update )
 			wp_cache_set($post_id, $old, 'pre_flush_post');
@@ -1297,11 +1302,16 @@ EOS;
 			switch ( $key ) {
 			case 'widgets_label':
 			case 'widgets_desc':
-			case 'widgets_exclude':
 				if ( $$key != get_post_meta($post_id, "_$key", true) )
 					return nav_menu::flush_cache();
 				break;
-			
+
+			case 'widgets_exclude':
+			case 'menu_exclude':
+				if ( (int) $$key != (int) get_post_meta($post_id, "_$key", true) )
+					return nav_menu::flush_cache();
+				break;
+
 			case 'permalink':
 				if ( $$key != apply_filters('the_permalink', get_permalink($post_id)) )
 					return nav_menu::flush_cache();

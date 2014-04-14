@@ -32,6 +32,8 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 - Code refactoring
 - Add additional css classes for customization
 - The exclusion for pages in menu widget is now fixed.
+- Pages are no longer shown in list if they are excluded from navigation menus
+- Now supports the new semiologic reloaded menu exclude page meta box.
 
 
 = 2.2.1 =
