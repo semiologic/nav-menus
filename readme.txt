@@ -3,7 +3,7 @@ Contributors: Denis-de-Bernardy & Mike_Koepke
 Donate link: http://www.semiologic.com/partners/
 Tags: semiologic
 Requires at least: 3.1
-Tested up to: 3.8
+Tested up to: 3.9
 Stable tag: trunk
 
 Lets you manage navigation menus on your site.
@@ -29,9 +29,12 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 = 2.3 =
 
-- Code refactoring
+- WP 3.9 customizer compatibility
 - Add additional css classes for customization
 - The exclusion for pages in menu widget is now fixed.
+- Internal cache cleared on WP upgrade
+- Code refactoring
+- WP 3.9 compat
 
 
 = 2.2.1 =

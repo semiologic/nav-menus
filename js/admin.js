@@ -31,6 +31,7 @@ jQuery(document).ready(function(){
 		var items = menu.children('.nav_menu_item_sortables');
 		var base = menu.children('.nav_menu_base').val();
 		var item = jQuery('#nav_menu_item_defaults').children('.nav_menu_item-' + handle).clone();
+		var menu_base = jQuery('.nav_menu_item_select');
 		
 		item.find('input').each(function() {
 			var name = jQuery(this).attr('name');
@@ -57,6 +58,7 @@ jQuery(document).ready(function(){
 				handle = 'url';
 			select.val(handle);
 		}
+		menu_base.change();
 	});
 	
 	jQuery('.nav_menu_item_remove').live('click', function() {
@@ -64,6 +66,7 @@ jQuery(document).ready(function(){
 		var items = menu.children('.nav_menu_item_sortables');
 		var item = jQuery(this).closest('div.nav_menu_item');
 		var blank = jQuery('#nav_menu_item_defaults').children('.nav_menu_item_blank').clone();
+		var menu_base = jQuery('.nav_menu_item_select');
 		
 		if ( items.children('.nav_menu_item').size() > 1 ) {
 			item.remove();
@@ -73,6 +76,7 @@ jQuery(document).ready(function(){
 			items.empty();
 			items.append(blank);
 		}
+		menu_base.change();
 	});
 	
 	jQuery('div.nav_menu_item_sortables:has(.nav_menu_item)').sortable({});
