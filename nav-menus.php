@@ -3,7 +3,7 @@
 Plugin Name: Nav Menus
 Plugin URI: http://www.semiologic.com/software/nav-menus/
 Description: WordPress widgets that let you create navigation menus.
-Version: 2.3 dev
+Version: 2.3
 Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: nav-menus
@@ -89,7 +89,7 @@ class nav_menu extends WP_Widget {
 		load_plugin_textdomain(
 			$domain,
 			FALSE,
-			$this->plugin_path . 'lang'
+			dirname(plugin_basename(__FILE__)) . '/lang'
 		);
 	}
 
@@ -112,7 +112,7 @@ class nav_menu extends WP_Widget {
    			'description' => __('A navigation menu', 'nav-menus'),
    			);
    		$control_ops = array(
-   			'width' => 330,
+   			'width' => 330
    			);
 
    		$this->WP_Widget('nav_menu', __('Nav Menu', 'nav-menus'), $widget_ops, $control_ops);
@@ -155,6 +155,7 @@ class nav_menu extends WP_Widget {
 		      'clean_page_cache',
 		    'flush_cache',
 		    'after_db_upgrade',
+			'wp_upgrade'
 		    ) as $hook )
 			add_action($hook, array($this, 'flush_cache'));
 
@@ -172,6 +173,8 @@ class nav_menu extends WP_Widget {
 			    'delete_post',
 			    ) as $hook )
 			add_action($hook, array($this, 'flush_post'), 1); // before _save_post_hook()
+
+			add_filter( 'is_wide_widget_in_customizer', array($this, 'is_wide_widget'), 10, 2 );
 		}
 
 		register_activation_hook(__FILE__, array($this, 'flush_cache'));
@@ -232,7 +235,7 @@ class nav_menu extends WP_Widget {
 		$folder = plugin_dir_url(__FILE__) . 'js';
 		wp_enqueue_script('nav-menus', $folder . '/admin.js', array('jquery-ui-sortable'),  '20090903', true);
 		
-		add_action('admin_footer', array($this, 'admin_footer'));
+		add_action('admin_print_footer_scripts', array($this, 'admin_footer'));
 	} # admin_print_scripts()
 	
 	
@@ -244,8 +247,25 @@ class nav_menu extends WP_Widget {
 
 	function admin_print_styles() {
 		$folder = plugin_dir_url(__FILE__) . 'css';
-		wp_enqueue_style('nav-menus', $folder . '/admin.css', null, '20140107');
+		wp_enqueue_style('nav-menus', $folder . '/admin.css', null, '20140502');
 	} # admin_print_styles()
+
+
+	/**
+	 * is_wide_widget()
+	 *
+	 * @param bool $is_wide
+	 * @param string $widget_id
+	 * @return bool
+	 **/
+
+	function is_wide_widget( $is_wide, $widget_id ) {
+		$widget_name = 'nav_menu-';
+		$length = strlen($widget_name);
+		if (substr($widget_id , 0, $length) === $widget_name)
+			$is_wide = true;
+		return $is_wide;
+	} # is_wide_widget()
 
 
 	/**
