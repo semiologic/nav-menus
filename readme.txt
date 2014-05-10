@@ -27,6 +27,10 @@ The [Semiologic forum](http://forum.semiologic.com) is the best place to report 
 
 == Change Log ==
 
+= 2.3.1 =
+
+- Added further WP 3.9 customizer compatibility
+
 = 2.3 =
 
 - WP 3.9 customizer compatibility

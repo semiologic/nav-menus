@@ -3,7 +3,7 @@
 Plugin Name: Nav Menus
 Plugin URI: http://www.semiologic.com/software/nav-menus/
 Description: WordPress widgets that let you create navigation menus.
-Version: 2.3
+Version: 2.3.1
 Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: nav-menus
@@ -290,35 +290,46 @@ class nav_menu extends WP_Widget {
 				. $after_widget;
 			return;
 		}
-		
-		if ( is_page() ) {
-			global $_wp_using_ext_object_cache;
-			global $wp_the_query;
-			$page_id = $wp_the_query->get_queried_object_id();
-			$cache_id = "_$widget_id";
-			if ( $_wp_using_ext_object_cache )
-				$o = wp_cache_get($page_id, $widget_id);
-			else
-				$o = get_post_meta($page_id, $cache_id, true);
-		} else {
-			$cache_id = "$widget_id";
-			if ( is_home() && !is_paged() ) {
-				$context = 'home';
-			} elseif ( !is_search() && !is_404() ) {
-				$context = 'blog';
+
+		$use_caching = true;
+		global $wp_version;
+		if ( version_compare( $wp_version, '3.9', '>=' ) )
+			if ( $this->is_preview() )
+				$use_caching = false;
+
+		$o = '';
+
+		if ( $use_caching ) {
+			if ( is_page() ) {
+				global $_wp_using_ext_object_cache;
+				global $wp_the_query;
+				$page_id = $wp_the_query->get_queried_object_id();
+				$cache_id = "_$widget_id";
+
+				if ( $_wp_using_ext_object_cache )
+					$o = wp_cache_get($page_id, $widget_id);
+				else
+					$o = get_post_meta($page_id, $cache_id, true);
 			} else {
-				$context = 'search';
+				$cache_id = "$widget_id";
+				if ( is_home() && !is_paged() ) {
+					$context = 'home';
+				} elseif ( !is_search() && !is_404() ) {
+					$context = 'blog';
+				} else {
+					$context = 'search';
+				}
+				$cache = get_transient($cache_id);
+				$o = isset($cache[$context]) ? $cache[$context] : false;
 			}
-			$cache = get_transient($cache_id);
-			$o = isset($cache[$context]) ? $cache[$context] : false;
+
+			if ( !sem_widget_cache_debug && !is_preview() && $o ) {
+				#dump('cache');
+					echo $o;
+					return;
+			}
 		}
-		
-		if ( !sem_widget_cache_debug && !is_preview() && $o ) {
-			#dump('cache');
-			echo $o;
-			return;
-		}
-		
+
 		nav_menu::cache_pages();
 		
 		if ( !$items ) {
@@ -361,7 +372,7 @@ class nav_menu extends WP_Widget {
 
 		$o = ob_get_clean();
 		
-		if ( !is_preview() ) {
+		if ( !is_preview() && $use_caching ) {
 			if ( is_page() ) {
 				if ( $_wp_using_ext_object_cache )
 					wp_cache_set($page_id, $o, $widget_id);
