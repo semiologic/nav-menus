@@ -3,7 +3,7 @@
 Plugin Name: Nav Menus
 Plugin URI: http://www.semiologic.com/software/nav-menus/
 Description: WordPress widgets that let you create navigation menus.
-Version: 2.3.1
+Version: 2.3.2
 Author: Denis de Bernardy & Mike Koepke
 Author URI: http://www.getsemiologic.com
 Text Domain: nav-menus
@@ -292,8 +292,7 @@ class nav_menu extends WP_Widget {
 		}
 
 		$use_caching = true;
-		global $wp_version;
-		if ( version_compare( $wp_version, '3.9', '>=' ) )
+		if ( class_exists('WP_Customize_Widgets' ) )
 			if ( $this->is_preview() )
 				$use_caching = false;
 
