@@ -3,7 +3,7 @@ Contributors: Denis-de-Bernardy & Mike_Koepke
 Donate link: https://www.semiologic.com/donate/
 Tags: semiologic
 Requires at least: 3.1
-Tested up to: 4.0
+Tested up to: 4.3
 Stable tag: trunk
 
 Lets you manage navigation menus on your site.
